@@ -1,0 +1,39 @@
+#本服务为在线服务，需连接互联网
+
+
+#服务端口
+server:
+  port: 18081
+
+jasypt:
+  encryptor:
+    password: cmsz
+
+
+#以太坊
+eth:
+#在线节点URL
+  url: http://127.0.0.1:8546 #https://api.myetherapi.com/eth
+#钱包公钥地址
+  address:  "0xb1b537b8b2344e2ec68b29577d0d3b5afa85549e"
+
+#代币
+token:
+  #代币小数位数,与智能合约保持一致
+  decimals: 18
+
+#比特币
+bit:
+  rpc:
+    user: test
+    password: test
+    url: http://120.132.120.253:19332
+  addr: mh6RMN6KRnxhZ4wibzJvKLdfdUdJeWQ3xR
+#查询手续费API
+  feeUrl: https://bitcoinfees.21.co/api/v1/fees/recommended
+ #默认交易大小
+  txSize: 226
+  usdt:
+    txSize: 257
+
+
