@@ -5,9 +5,11 @@ server:
 
 spring:
   datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://121.201.80.40:3306/pe?autoReconnect=true&allowMultiQueries=true&useSSL=true
     username: root
     password: 123456
+
   jpa:
     database: mysql
     show-sql: true

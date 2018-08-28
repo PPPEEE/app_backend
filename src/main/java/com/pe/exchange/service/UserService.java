@@ -11,6 +11,7 @@ import com.pe.exchange.exception.SysException;
 import com.pe.exchange.redis.RedisOps;
 import com.pe.exchange.utils.SHA256Util;
 import com.pe.exchange.utils.SmsAppUtils;
+import com.pe.exchange.utils.TokenGeneratorUtil;
 import com.pe.exchange.utils.VeriCodeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.springframework.util.StringUtils;
 public class UserService {
 
     private static final String VERI_CODE_FLAG = "veri";
+    private static final String TOKEN_FLAG = "TOKEN";
     @Autowired
     SmsConfig smsConfig;
     @Autowired
@@ -60,16 +62,26 @@ public class UserService {
         if(u!=null){
             throw new BizException(ResultEnum.USER_ALREADY_EXISTS);
         }
-        String pwd=user.getPassword();
-        pwd = SHA256Util
-            .sha256Str(SHA256Util.sha256Str(user.getUserName())+pwd + SHA256Util.sha256Str(user.getPassword()));
-        user.setPassword(pwd);
+
+        user.setPassword(encryptPwd(user.getPassword()));
         try {
             userDao.save(user);
         } catch (Exception e) {
             log.error("数据插入失败",e);
             throw new SysException();
         }
+    }
+
+    public String login(String username,String password){
+        User user=userDao.findWithLogin(username);
+        if(user==null||!password.equals(user.getPassword()))
+        {
+            throw new BizException(ResultEnum.LOGIN_FAIL);
+        }
+        String token= TokenGeneratorUtil.generateValue();
+        redisOps.setWithTimeout(token,token,30*24*3600*1000);
+        return token;
+
     }
 
     public boolean checkVeriCode(String mobile, String code) {
@@ -79,6 +91,10 @@ public class UserService {
         return code.equals(savedCode);
     }
 
+    private String encryptPwd(String pwd){
+         return SHA256Util
+             .sha256Str(pwd + SHA256Util.sha256Str(pwd));
+    }
     private void sendVeriCode(String areaCode, String mobile, int type, String code) {
         String content = "";
         if (type == 1) {

@@ -1,1 +1,1 @@
-kill -9 `pgrep -f blockchain-online`
+kill -9 `pgrep -f exchange`

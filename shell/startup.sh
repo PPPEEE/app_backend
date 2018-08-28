@@ -1,2 +1,2 @@
 #!/bin/bash
-nohup java -jar blockchain-online.jar &
+nohup java -jar exchange.jar &

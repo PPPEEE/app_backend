@@ -1,5 +1,7 @@
 package com.pe.exchange.common;
 
+import com.pe.exchange.exception.BaseException;
+
 public class Results {
     private static final String DEFAULT_SUCCESS_MESSAGE = "SUCCESS";
 
@@ -21,6 +23,16 @@ public class Results {
         return new Result()
                 .setCode(ResultEnum.FAIL.getCode())
                 .setMessage(message);
+    }
+    public static Result fail(ResultEnum resultEnum) {
+        return new Result()
+            .setCode(resultEnum.getCode())
+            .setMessage(resultEnum.getMsg());
+    }
+    public static Result fail(BaseException e) {
+        return new Result()
+            .setCode(e.getCode())
+            .setMessage(e.getMsg());
     }
 
     public static Result unauthorized() {
