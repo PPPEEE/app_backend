@@ -1,12 +1,14 @@
 package com.pe.exchange.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -30,16 +32,28 @@ public class Trade {
      */
     private Integer priceType;
     /**
-     * 交易数量
+     * 数量
      */
     private BigDecimal num;
     /**
-     * 交易单价
+     * 单价
      */
     private BigDecimal price;
     /**
-     * 交易金额
+     * 金额
      */
     private BigDecimal amount;
-    private BigDecimal dealed;
+
+    /**
+     * 已成交数量
+     */
+    private BigDecimal dealNum;
+
+    private LocalDateTime addTime;
+
+    /**
+     * 交易状态,0全部交易完成,1交易中,2取消
+     */
+    @ColumnDefault(value = "1")
+    private Integer status;
 }
