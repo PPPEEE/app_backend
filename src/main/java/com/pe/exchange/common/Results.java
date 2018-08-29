@@ -29,11 +29,7 @@ public class Results {
             .setCode(resultEnum.getCode())
             .setMessage(resultEnum.getMsg());
     }
-    public static Result fail(BaseException e) {
-        return new Result()
-            .setCode(e.getCode())
-            .setMessage(e.getMsg());
-    }
+
 
     public static Result unauthorized() {
         return new Result()

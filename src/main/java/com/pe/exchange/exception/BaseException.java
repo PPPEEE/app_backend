@@ -1,19 +1,21 @@
 package com.pe.exchange.exception;
 
+import com.pe.exchange.common.Result;
 import com.pe.exchange.common.ResultEnum;
+import com.pe.exchange.common.Results;
 import lombok.Data;
 
 @Data
 public abstract class BaseException extends RuntimeException {
-    private int code;
-    private String msg;
+    private Result result;
+
     public BaseException(int code,String msg){
         super(msg);
-        this.code=code;
-        this.msg=msg;
+        this.result=new Result().setCode(code).setMessage(msg);
+
     }
     public BaseException(ResultEnum resultEnum){
-        this.code=resultEnum.getCode();
-        this.msg=resultEnum.getMsg();
+        this.result= Results.fail(resultEnum);
+
     }
 }

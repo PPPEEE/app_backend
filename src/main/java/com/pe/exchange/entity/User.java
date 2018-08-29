@@ -16,8 +16,8 @@ public class User {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
-    @MapKey
     private String userName;
+    private String mobileArea;
     private String mobile;
     private String password;
     private String payPassword;

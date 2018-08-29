@@ -20,7 +20,7 @@ public class ControllerExceptionAdvice {
     @ResponseBody
     @ExceptionHandler(value = BaseException.class)
     public Result myErrorHandler(BaseException ex) {
-        return  Results.fail(ex);
+        return  ex.getResult();
     }
 
 }
