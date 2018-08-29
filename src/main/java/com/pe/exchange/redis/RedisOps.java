@@ -22,6 +22,7 @@ public class RedisOps {
      * @param time 单位默认为毫秒
      */
     public void setWithTimeout(String key ,String value,long time){
+
         stringRedisTemplate.opsForValue().set(key,value,time, TimeUnit.MILLISECONDS);
     }
     public String get(String key){

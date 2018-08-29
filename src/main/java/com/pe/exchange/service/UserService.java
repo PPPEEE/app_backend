@@ -79,7 +79,7 @@ public class UserService {
             throw new BizException(ResultEnum.LOGIN_FAIL);
         }
         String token= TokenGeneratorUtil.generateValue();
-        redisOps.setWithTimeout(token,token,30*24*3600*1000);
+        redisOps.setWithTimeout(token,user.getUserId().toString(),30*24*3600*1000);
         return token;
 
     }
