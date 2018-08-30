@@ -6,14 +6,16 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://121.201.80.40:3306/pe?autoReconnect=true&allowMultiQueries=true&useSSL=true
+    url: jdbc:mysql://127.0.0.1:3306/pe?autoReconnect=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&allowMultiQueries=true&useSSL=false
     username: root
-    password: 123456
+    password: xc123456
 
   jpa:
     database: mysql
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     show-sql: true
     generate-ddl: true
+
   redis:
     #数据库索引
     database: 0

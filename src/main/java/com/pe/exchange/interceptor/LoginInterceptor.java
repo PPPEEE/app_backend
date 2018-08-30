@@ -4,9 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.pe.exchange.common.Result;
 import com.pe.exchange.common.Results;
 import com.pe.exchange.redis.RedisOps;
+import com.pe.exchange.utils.UserUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -21,7 +21,7 @@ import java.io.PrintWriter;
 @Slf4j
 public class LoginInterceptor implements HandlerInterceptor {
 	@Autowired
-	private StringRedisTemplate stringRedisTemplate;
+	private RedisOps redisOps;
 	/*
 	 * 视图渲染之后的操作
 	 */
@@ -46,10 +46,10 @@ public class LoginInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object obj) throws Exception {
 		String token = request.getHeader("token");
-		if(StringUtils.isEmpty(token)||!stringRedisTemplate.hasKey(token)){
+		if(StringUtils.isEmpty(token)||!redisOps.hasKey(token)){
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType("text/html; charset=utf-8");
-			try(PrintWriter writer = response.getWriter();) {
+			try(PrintWriter writer = response.getWriter()) {
 				Result unauthorized = Results.unauthorized();
 				writer.print(JSON.toJSONString(unauthorized));
 
@@ -58,6 +58,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 			}
 			return false;
 		}
+		UserUtil.set(Integer.valueOf(redisOps.get(token)));
 		return true;
 	}
 

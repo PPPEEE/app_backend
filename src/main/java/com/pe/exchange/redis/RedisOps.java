@@ -30,4 +30,8 @@ public class RedisOps {
       return  stringRedisTemplate.opsForValue().get(key);
     }
 
+    public boolean hasKey(String key){
+        return stringRedisTemplate.hasKey(key);
+    }
+
 }

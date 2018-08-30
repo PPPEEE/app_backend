@@ -1,8 +1,10 @@
 package com.pe.exchange.entity;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,12 +22,16 @@ public class Trade {
     /**
      * 支付类型,0卖1买
      */
+
     private Integer tradeType;
 
-    /**
-     * 暂时填dk_cny，以后可以支持btc_dk, dk_usd等
+    /**1、dk_cny
+     * 2、btc_dk
+     * 3、dk_usd
+     * ...
+     * 暂时填1
      */
-    private String marketType;
+    private Integer marketType;
 
     /**
      * 价格类型,0限价 1市价,暂时固定为0
@@ -34,19 +40,30 @@ public class Trade {
     /**
      * 数量
      */
+    @Column(precision = 8)
     private BigDecimal num;
     /**
      * 单价
      */
+    @Column(precision = 2)
     private BigDecimal price;
     /**
      * 金额
      */
+    @Column(precision = 2)
     private BigDecimal amount;
+
+    /**
+     * 手续费
+     */
+    @Column(precision = 2)
+    private BigDecimal fee;
 
     /**
      * 已成交数量
      */
+    @ColumnDefault("0")
+    @Column(precision = 8)
     private BigDecimal dealNum;
 
     private LocalDateTime addTime;

@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.math.BigDecimal;
 
 @Data
 @Entity
@@ -11,18 +12,23 @@ public class UserBalance {
     @Id
     private Integer userId;
     /**
-     * 币种类型,0、平台DK 1、平台DN  2、比特币  2、以太币
+     * 币种类型,0、平台DK 1、平台DN
      */
     private Integer coinType;
+
     /**
-     * 各币地址,平台币不需要
+     * 收款地址
      */
     private String address;
     /**
-     * 各币余额
+     *  余额
      */
-    private String balance;
+    private Integer balance;
 
+    /**
+     * 锁定余额
+     */
+    private Integer lockBalance;
 
 
 }
