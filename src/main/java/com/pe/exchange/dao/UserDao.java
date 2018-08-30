@@ -9,9 +9,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserDao extends JpaRepository<User,Integer> {
 
-    User findByMobile(String mobile);
-    User findByUserName(String userName);
+ /*   User findByMobile(String mobile);*/
+	
+	@Query(value = "select * from user where user_name = :userName",nativeQuery = true)
+    User findByUserName(@Param("userName")String userName);
 
-    @Query(value = "select * from user where user_name=:param or mobile=:param or user_id=:param",nativeQuery = true)
+    @Query(value = "select * from user where user_name=:param or telephone=:param or id=:param",nativeQuery = true)
     User findWithLogin(@Param("param")String param);
+    
+    
+   /* @Query(value = "select * from user where id = :id",nativeQuery = true)
+    User findById(@Param("id")long id);*/
 }

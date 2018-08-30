@@ -6,9 +6,11 @@ public enum ResultEnum {
     UNAUTHORIZED(401,"未认证"),//未认证（签名错误）
     LOGIN_FAIL(402,"用户名或密码错误"),//未认证（签名错误）
     USER_ALREADY_EXISTS(301,"用户已存在"),
+    CODE_ERROR(302,"验证码失效"),
+    USER_FAIL(303,"用户失效！"),
     NOT_FOUND(404,"接口不存在"),//接口不存在
     INTERNAL_SERVER_ERROR(500,"内部错误");//服务器内部错误
-
+	
     private int code;
     private String msg;
 

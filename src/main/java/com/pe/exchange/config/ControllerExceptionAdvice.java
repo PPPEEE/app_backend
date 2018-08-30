@@ -11,16 +11,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ControllerAdvice
 public class ControllerExceptionAdvice {
 
-    /**
-     *
-     * @param ex
-     * @return
-     */
-    @ResponseBody
-    @ExceptionHandler(value = Exception.class)
-    public Result errorHandler(Exception ex) {
-        return Results.fail("服务器异常,请稍候再试!");
-    }
 
     /**
      *
