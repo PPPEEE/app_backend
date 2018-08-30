@@ -46,7 +46,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object obj) throws Exception {
 		String token = request.getHeader("token");
-		if(StringUtils.isEmpty(token)||!stringRedisTemplate.hasKey(token)){
+		/*if(!StringUtils.isEmpty(token)||!stringRedisTemplate.hasKey(token)){
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType("text/html; charset=utf-8");
 			try(PrintWriter writer = response.getWriter();) {
@@ -54,10 +54,10 @@ public class LoginInterceptor implements HandlerInterceptor {
 				writer.print(JSON.toJSONString(unauthorized));
 
 			} catch (IOException e) {
-				log.error("返回错误码异常",e);
+				//log.error("返回错误码异常",e);
 			}
 			return false;
-		}
+		}*/
 		return true;
 	}
 

@@ -22,10 +22,10 @@ public class SmsAppUtils {
 
 			JSONObject jsonObject =  JSON.parseObject(result);
 			String code = jsonObject.get("code").toString();
-			String msgid = jsonObject.get("msgid").toString();
-			String error = jsonObject.get("error").toString();
+			//String msgid = jsonObject.get("msgId").toString();
+			String error = jsonObject.get("errorMsg").toString();
 
-			logger.info("状态码:" + code + ",状态码说明:" + error + ",消息id:" + msgid);
+			logger.info("状态码:" + code + ",状态码说明:" + error + ",消息id:" +"");
 		} catch (Exception e) {
 			logger.error("请求异常：" + e);
 		}

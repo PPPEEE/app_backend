@@ -1,14 +1,14 @@
 
 #服务端口
 server:
-  port: 8081
+  port: 8080
 
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://121.201.80.40:3306/pe?autoReconnect=true&allowMultiQueries=true&useSSL=true
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/pe_app
     username: root
-    password: 123456
+    password: ROOT
 
   jpa:
     database: mysql
@@ -33,9 +33,9 @@ spring:
 sms:
   local:
     url: http://smssh1.253.com/msg/send/json
-    username: N6374474
-    password: 11
-    sign: 11
+    username: CN5364552
+    password: 4QIoRjbzBe3509
+    sign: 【253云通讯】
   foreign:
     url: 11
     username: 11

@@ -1,10 +1,18 @@
 package com.pe.exchange.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.alibaba.fastjson.JSONObject;
 import com.pe.exchange.common.ResultEnum;
 import com.pe.exchange.config.SmsConfig;
 import com.pe.exchange.dao.UserDao;
+import com.pe.exchange.dao.UserInfoDao;
 import com.pe.exchange.entity.User;
+import com.pe.exchange.entity.UserInfo;
 import com.pe.exchange.exception.BaseException;
 import com.pe.exchange.exception.BizException;
 import com.pe.exchange.exception.SysException;
@@ -13,15 +21,14 @@ import com.pe.exchange.utils.SHA256Util;
 import com.pe.exchange.utils.SmsAppUtils;
 import com.pe.exchange.utils.TokenGeneratorUtil;
 import com.pe.exchange.utils.VeriCodeUtils;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
 public class UserService {
 
+	private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private static final String VERI_CODE_FLAG = "veri";
     private static final String TOKEN_FLAG = "TOKEN";
     @Autowired
@@ -31,11 +38,27 @@ public class UserService {
 
     @Autowired
     UserDao userDao;
+    
+    @Autowired
+    UserInfoDao userInfoDao;
+    
+    
+    public void updateUserInfo(UserInfo userInfo) {
+    	try {
+    		log.info("开始执行修改用户信息,用户ID："+userInfo.getUserId());
+    		userInfoDao.save(userInfo);
+		} catch (Exception e) {
+			log.error("系统异常:",e);
+			throw new SysException();
+		}
+    }
+    
 
     public void getVeriCode(String areaCode, String mobile, int type) {
+    	
         // 获取验证码
         String code = VeriCodeUtils.random(6);
-
+        System.out.println(code);
         try {
             // 保存验证码到redis,有效期60s
             String key = mobile + VERI_CODE_FLAG;
@@ -53,17 +76,16 @@ public class UserService {
 
     }
 
-    public void register(User user){
-        User u=userDao.findByMobile(user.getMobile());
+    public void register(User user,String code){
+        User u= userDao.findByUserName(user.getUserName());
         if(u!=null){
             throw new BizException(ResultEnum.USER_ALREADY_EXISTS);
         }
-        u=userDao.findByUserName(user.getUserName());
-        if(u!=null){
-            throw new BizException(ResultEnum.USER_ALREADY_EXISTS);
+        if(!checkVeriCode(user.getTelephone(),code)) {
+        	throw new BizException(ResultEnum.CODE_ERROR);
         }
-
-        user.setPassword(encryptPwd(user.getPassword()));
+      
+        user.setPwd(encryptPwd(user.getPwd()));
         try {
             userDao.save(user);
         } catch (Exception e) {
@@ -74,14 +96,13 @@ public class UserService {
 
     public String login(String username,String password){
         User user=userDao.findWithLogin(username);
-        if(user==null||!password.equals(user.getPassword()))
+        if(user==null||!password.equals(user.getPwd()))
         {
             throw new BizException(ResultEnum.LOGIN_FAIL);
         }
         String token= TokenGeneratorUtil.generateValue();
-        redisOps.setWithTimeout(token,user.getUserId().toString(),30*24*3600*1000);
+        redisOps.setWithTimeout(token,user.getId().toString(), 1000 * 60 * 30);
         return token;
-
     }
 
     public boolean checkVeriCode(String mobile, String code) {
@@ -122,13 +143,13 @@ public class UserService {
             map.put("password", smsConfig.getLocal().getPassword());
             map.put("msg", smsConfig.getLocal().getSign() + content);
         } else {
-            String msg = "[" + smsConfig.getForeign().getSign()
+            /*String msg = "[" + smsConfig.getForeign().getSign()
                 + "] Do not respond to any email/sms/phone call requesting you to reveal your TAC. TAC requested is "
                 + code + ". ";
             url = smsConfig.getForeign().getUrl();
             map.put("account", smsConfig.getForeign().getUsername());
             map.put("password", smsConfig.getForeign().getPassword());
-            map.put("msg", msg);
+            map.put("msg", msg);*/
         }
         map.put("mobile", mobile);
         map.put("phone", mobile);

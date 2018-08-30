@@ -18,4 +18,12 @@ public abstract class BaseException extends RuntimeException {
         this.result= Results.fail(resultEnum);
 
     }
+	public Result getResult() {
+		return result;
+	}
+	public void setResult(Result result) {
+		this.result = result;
+	}
+    
+    
 }
