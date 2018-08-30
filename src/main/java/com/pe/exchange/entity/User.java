@@ -1,7 +1,7 @@
 package com.pe.exchange.entity;
 
-import java.io.Serializable;
-import java.util.Set;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -10,19 +10,22 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-
-import lombok.Data;
+import java.io.Serializable;
+import java.util.Set;
 
 @Data
 @Entity
 public class User implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ApiModelProperty(hidden = true)
     private Integer id;
     private String userName; //用户名
     private String pwd; //密码
     private String telephone; //联系电话
     private String refereeId; //推荐人ID
+    @ApiModelProperty(hidden = true)
+    private String address;
     
     
 	@OneToMany(cascade={CascadeType.ALL})
@@ -32,6 +35,7 @@ public class User implements Serializable{
 	@OneToMany(cascade={CascadeType.ALL})
 	@JoinColumn(name = "id")
 	private Set<DKOrder> dkOrders;
+
 	
 	public Integer getId() {
 		return id;

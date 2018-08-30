@@ -1,11 +1,5 @@
 package com.pe.exchange.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.alibaba.fastjson.JSONObject;
 import com.pe.exchange.common.ResultEnum;
 import com.pe.exchange.config.SmsConfig;
@@ -17,18 +11,21 @@ import com.pe.exchange.exception.BaseException;
 import com.pe.exchange.exception.BizException;
 import com.pe.exchange.exception.SysException;
 import com.pe.exchange.redis.RedisOps;
+import com.pe.exchange.utils.CopyBTCAddressUtil;
 import com.pe.exchange.utils.SHA256Util;
 import com.pe.exchange.utils.SmsAppUtils;
 import com.pe.exchange.utils.TokenGeneratorUtil;
 import com.pe.exchange.utils.VeriCodeUtils;
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
 public class UserService {
 
-	private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private static final String VERI_CODE_FLAG = "veri";
     private static final String TOKEN_FLAG = "TOKEN";
     @Autowired
@@ -76,6 +73,7 @@ public class UserService {
 
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void register(User user,String code){
         User u= userDao.findByUserName(user.getUserName());
         if(u!=null){
@@ -87,6 +85,8 @@ public class UserService {
       
         user.setPwd(encryptPwd(user.getPwd()));
         try {
+            userDao.save(user);
+            user.setAddress(CopyBTCAddressUtil.generateAddress(user.getId()));
             userDao.save(user);
         } catch (Exception e) {
             log.error("数据插入失败",e);
@@ -109,6 +109,7 @@ public class UserService {
         // 保存验证码到redis,有效期60s
         String key = mobile + VERI_CODE_FLAG;
         String savedCode = redisOps.get(key);
+        redisOps.delete(key);
         return code.equals(savedCode);
     }
 

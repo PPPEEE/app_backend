@@ -34,4 +34,7 @@ public class RedisOps {
         return stringRedisTemplate.hasKey(key);
     }
 
+    public boolean delete(String key){
+        return stringRedisTemplate.delete(key);
+    }
 }
