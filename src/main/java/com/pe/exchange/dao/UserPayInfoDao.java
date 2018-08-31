@@ -11,6 +11,6 @@ import com.pe.exchange.entity.UserPayInfo;
 public interface UserPayInfoDao extends JpaRepository<UserPayInfo, Integer>{
 	
 	@Query(value="select * from user_pay_info where user_Id = :userId",nativeQuery = true)
-	List<UserPayInfo> queryUserPayInfoList(@Param("userId") String userId);
+	List<UserPayInfo> queryUserPayInfoList(@Param("userId") Integer userId);
 
 }

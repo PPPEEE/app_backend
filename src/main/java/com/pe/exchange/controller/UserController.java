@@ -77,6 +77,9 @@ public class UserController {
      */
     @SuppressWarnings("rawtypes")
 	@PostMapping("checkCode")
+    @ApiOperation("校验验证码")
+    @ApiImplicitParams({@ApiImplicitParam(name = "mobile",value = "手机号码",dataType = "String", paramType = "query" , required = true),
+    	@ApiImplicitParam(name = "code",value = "验证码",dataType = "String", paramType = "query", required = true)})
     public Result checkCode(@RequestParam("mobile") String mobile,@RequestParam("code") String code) {
     	return Results.success(userService.checkVeriCode(mobile, code));
     }
@@ -106,6 +109,7 @@ public class UserController {
      */
     @SuppressWarnings("rawtypes")
 	@PostMapping("updateUserInfo")
+    @ApiOperation("修改用户资料")
     public Result updateUserInfo(UserInfo userInfo) {
     	userService.updateUserInfo(userInfo);
     	return Results.success();
@@ -116,11 +120,18 @@ public class UserController {
      * @return
      */
     @PostMapping("findUserPayInfo")
-    public Result findUserPayInfo(@RequestParam("token") String token) {
-    	return Results.success(userPayInfoService.findUserPayInfoList(token));
+    @ApiOperation("查询用户绑定支付方式类型")
+    public Result findUserPayInfo() {
+    	return Results.success(userPayInfoService.findUserPayInfoList());
     }
     
+    /***
+     * 绑定支付方式
+     * @param payInfo
+     * @return
+     */
     @PostMapping("saveUserPayInfo")
+    @ApiOperation("绑定用户支付方式")
     public Result saveUserPayInfo(UserPayInfo payInfo) {
     	userPayInfoService.saveUserPayInfo(payInfo);
     	return Results.success();

@@ -30,13 +30,13 @@ public class DKDealController {
 	
 	
 	@PostMapping("findTotal")
-	public Result findDKTotalNumber(@RequestParam("token") String token) {
-		return Results.success(dkDealService.getUserDKNumber(token));
+	public Result findDKTotalNumber() {
+		return Results.success(dkDealService.getUserDKNumber());
 	}
 	
 	@PostMapping("releaseDK")
-	public Result releaseDk(DKDealInfo dealInfo,@RequestParam("token") String token) {
-		dkDealService.saveDKDeal(dealInfo, token);
+	public Result releaseDk(DKDealInfo dealInfo) {
+		dkDealService.saveDKDeal(dealInfo);
 		return Results.success();
 	}
 	

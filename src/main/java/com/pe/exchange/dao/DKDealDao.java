@@ -13,7 +13,7 @@ import com.pe.exchange.entity.DKDealInfo;
 public interface DKDealDao extends JpaRepository<DKDealInfo, Integer>{
 
 	@Query(value="select * from dkdeal_info where status = 1 and user_id = :userId ",nativeQuery = true)
-	List<DKDealInfo> getDKTotalNumber(@Param("userId")String userId);
+	List<DKDealInfo> getDKTotalNumber(@Param("userId")Integer userId);
 	
 	@Query(value="select * from dkdeal_info where `status` = 1 and type = :type",nativeQuery = true)
 	List<DKDealInfo> findTypeDKList(@Param("type")int type);

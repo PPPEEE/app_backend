@@ -35,68 +35,6 @@ public class DKDealInfo implements Serializable{
 	//订单状态 1:已完成 2：未完成 3:已失效
 	private Integer status;
 	
-	//用户Id
-	@ManyToOne
-    @JoinColumn(name = "userId")
-	private User user;
-	
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getOrderNumber() {
-		return orderNumber;
-	}
-
-	public void setOrderNumber(String orderNumber) {
-		this.orderNumber = orderNumber;
-	}
-
-	public Integer getDealNumber() {
-		return dealNumber;
-	}
-
-	public void setDealNumber(Integer dealNumber) {
-		this.dealNumber = dealNumber;
-	}
-
-	public Double getMoney() {
-		return money;
-	}
-
-	public void setMoney(Double money) {
-		this.money = money;
-	}
-
-	public Integer getType() {
-		return type;
-	}
-
-	public void setType(Integer type) {
-		this.type = type;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-	
-	public Integer getStatus() {
-		return status;
-	}
-
-	public void setStatus(Integer status) {
-		this.status = status;
-	}
-	
-	
-	
+	private Integer user_id;
 	
 }

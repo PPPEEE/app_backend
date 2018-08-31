@@ -8,8 +8,12 @@ import com.pe.exchange.entity.User;
 import com.pe.exchange.exception.BizException;
 import com.pe.exchange.exception.SysException;
 import com.pe.exchange.redis.RedisOps;
+import com.pe.exchange.utils.UserUtil;
 import com.pe.exchange.utils.VeriCodeUtils;
 import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -20,6 +24,7 @@ import java.util.List;
 @Service
 public class DKDealService {
 	
+	private Logger log = LoggerFactory.getLogger(DKDealInfo.class);
 
 	@Autowired
 	private DKDealDao dkDealDao;
@@ -34,12 +39,9 @@ public class DKDealService {
 	 * 查询用户DK总资产
 	 * @return
 	 */
-	public Integer getUserDKNumber(String token) {
-	  String userId = redisOps.get(token);
-	  if(StringUtils.isEmpty(userId)) {
-		  log.error("用户失效！");
-		  throw new BizException(ResultEnum.USER_FAIL);
-	  }
+	public Integer getUserDKNumber() {
+	  Integer userId = UserUtil.get();
+	 
 	  List<DKDealInfo> dkList = dkDealDao.getDKTotalNumber(userId);
 	  return computeDKTotal(dkList);
 	}
@@ -61,21 +63,15 @@ public class DKDealService {
 		return total;
 	}
 	
-	public void saveDKDeal(DKDealInfo dealInfo,String token) {
-		String userId = redisOps.get(token);
-		if(StringUtils.isEmpty(userId)) {
-			  log.error("用户失效！");
-			  throw new BizException(ResultEnum.USER_FAIL);
-		  }
+	public void saveDKDeal(DKDealInfo dealInfo) {
+		Integer userId = UserUtil.get();
 		//绑定订单号
 		dealInfo.setOrderNumber(VeriCodeUtils.getOrderIdByUUId());
 		dealInfo.setMoney(dealInfo.getDealNumber() * 0.8);
-		User u = new User();
-		u.setId(Integer.valueOf(userId));
-		dealInfo.setUser(u);
+		dealInfo.setUser_id(userId);
 		int total = 0;
 		if(2 == dealInfo.getType()) {
-			total = getUserDKNumber(token);
+			total = getUserDKNumber();
 			if(total<1) {
 				throw new SysException();
 			}

@@ -5,6 +5,7 @@ import com.pe.exchange.common.ResultEnum;
 import com.pe.exchange.config.SmsConfig;
 import com.pe.exchange.dao.UserDao;
 import com.pe.exchange.dao.UserInfoDao;
+import com.pe.exchange.entity.DKDealInfo;
 import com.pe.exchange.entity.User;
 import com.pe.exchange.entity.UserInfo;
 import com.pe.exchange.exception.BaseException;
@@ -15,8 +16,12 @@ import com.pe.exchange.utils.CopyBTCAddressUtil;
 import com.pe.exchange.utils.SHA256Util;
 import com.pe.exchange.utils.SmsAppUtils;
 import com.pe.exchange.utils.TokenGeneratorUtil;
+import com.pe.exchange.utils.UserUtil;
 import com.pe.exchange.utils.VeriCodeUtils;
 import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +31,7 @@ import org.springframework.util.StringUtils;
 @Service
 public class UserService {
 
+	private Logger log = LoggerFactory.getLogger(UserService.class);
     private static final String VERI_CODE_FLAG = "veri";
     private static final String TOKEN_FLAG = "TOKEN";
     @Autowired
@@ -42,6 +48,7 @@ public class UserService {
     
     public void updateUserInfo(UserInfo userInfo) {
     	try {
+    		userInfo.setUserId(UserUtil.get());
     		log.info("开始执行修改用户信息,用户ID："+userInfo.getUserId());
     		userInfoDao.save(userInfo);
 		} catch (Exception e) {

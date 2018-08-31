@@ -11,7 +11,7 @@ public class TransferService {
 
     public String getAddress(){
         Integer userId= UserUtil.get();
-        String address=userDao.findAddressByUserId(userId);
+        String address=userDao.findAddressById(userId);
         return address;
     }
 }

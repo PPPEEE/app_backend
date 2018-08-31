@@ -1,10 +1,14 @@
 package com.pe.exchange.controller;
 
+import com.pe.exchange.entity.DKDealInfo;
 import com.pe.exchange.service.TransferService;
 import com.pe.exchange.utils.QrCodeUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +25,7 @@ import java.io.IOException;
 @RequestMapping("transfer")
 public class TransferController {
 
+		private Logger log = LoggerFactory.getLogger(TransferController.class);
         private static  final  String ORCODE_FORMAT="JPEG";
 
         @Autowired TransferService transferService;
