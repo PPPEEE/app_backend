@@ -1,5 +1,7 @@
 package com.pe.exchange.controller;
 
+import com.pe.exchange.common.Result;
+import com.pe.exchange.common.Results;
 import com.pe.exchange.entity.DKDealInfo;
 import com.pe.exchange.service.TransferService;
 import com.pe.exchange.utils.QrCodeUtil;
@@ -11,7 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.imageio.ImageIO;
@@ -42,5 +46,12 @@ public class TransferController {
                 log.error("获取二维码异常",e);
             }
 
+        }
+
+        @ApiOperation("转账")
+        @PostMapping("transfer")
+        public Result transfer(@RequestParam("address") String address,@RequestParam("amount") Integer amount){
+                transferService.transfer(address,amount);
+                return Results.success();
         }
 }
