@@ -10,6 +10,7 @@ import com.pe.exchange.common.Result;
 import com.pe.exchange.common.Results;
 import com.pe.exchange.entity.DKDealInfo;
 import com.pe.exchange.service.DKDealService;
+import com.pe.exchange.utils.OderQueueUtil;
 
 import io.swagger.annotations.Api;
 
@@ -43,6 +44,33 @@ public class DKDealController {
 	@PostMapping("dkByType")
 	public Result findDKDeailByType(@RequestParam("type") int type) {
 		return Results.success(dkDealService.findDKDeailList(type));
+	}
+	
+	@PostMapping("findDkById")
+	public Result findDKById(@RequestParam("id") Integer id) {
+		return Results.success(dkDealService.findDkById(id));
+	}
+	
+	@PostMapping("dkPurchase")
+	public Result dkDeailPurchase(Integer id) {
+		dkDealService.dkDeailPurchase(id);
+		return Results.success();
+	}
+	
+	@PostMapping("commit")
+	public Result commitOder(Integer id) {
+		dkDealService.commitDK(id);
+		return Results.success();
+	}
+	
+	@PostMapping("getExpiryTime")
+	public Result getExpiryTime(@RequestParam("oderId") Integer oderId) {
+		Long times = 0L;
+		String rKey = dkDealService.getOderRedisKey(oderId);
+		if(OderQueueUtil.getQueues().containsKey(rKey)) {
+			times = OderQueueUtil.get(rKey);
+		}
+		return Results.success(times);
 	}
 	
 }
