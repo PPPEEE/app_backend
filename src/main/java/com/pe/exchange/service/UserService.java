@@ -12,6 +12,7 @@ import com.pe.exchange.exception.BaseException;
 import com.pe.exchange.exception.BizException;
 import com.pe.exchange.exception.SysException;
 import com.pe.exchange.redis.RedisOps;
+import com.pe.exchange.task.UserInvitTask;
 import com.pe.exchange.utils.CopyBTCAddressUtil;
 import com.pe.exchange.utils.SHA256Util;
 import com.pe.exchange.utils.SmsAppUtils;
@@ -44,6 +45,7 @@ public class UserService {
     
     @Autowired
     UserInfoDao userInfoDao;
+    @Autowired UserInvitTask userInvitTask;
     
     
     public void updateUserInfo(UserInfo userInfo) {
@@ -95,6 +97,9 @@ public class UserService {
             userDao.save(user);
             user.setAddress(CopyBTCAddressUtil.generateAddress(user.getId()));
             userDao.save(user);
+            if(user.getRefereeId()!=null){
+                userInvitTask.userInvit(user.getRefereeId(),user.getId());
+            }
         } catch (Exception e) {
             log.error("数据插入失败",e);
             throw new SysException();

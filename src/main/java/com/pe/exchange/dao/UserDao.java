@@ -18,6 +18,8 @@ public interface UserDao extends JpaRepository<User,Integer> {
     User findWithLogin(@Param("param")String param);
 
     String findAddressById(Integer id);
+
+    Integer findIdByAddress(String address);
     
     
    /* @Query(value = "select * from user where id = :id",nativeQuery = true)
