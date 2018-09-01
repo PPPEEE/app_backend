@@ -37,4 +37,9 @@ public class RedisOps {
     public boolean delete(String key){
         return stringRedisTemplate.delete(key);
     }
+    
+    
+    public Long getOutTimes(String key) {
+    	return stringRedisTemplate.getExpire(key);
+    }
 }

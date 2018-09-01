@@ -1,12 +1,11 @@
 package com.pe.exchange.entity;
 
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
+import lombok.Data;
 
 /**
  * 用户邀请

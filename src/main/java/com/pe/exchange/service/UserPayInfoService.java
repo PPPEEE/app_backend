@@ -24,9 +24,12 @@ public class UserPayInfoService {
 	@Autowired
 	RedisOps redisOps;
 	 
-	public List<UserPayInfo> findUserPayInfoList(){
-		 Integer userId = UserUtil.get();
-		 return userPayInfoDao.queryUserPayInfoList(userId);
+	public List<UserPayInfo> findUserPayInfoList(Integer...ids){
+		Integer userId = UserUtil.get();
+		if(ids.length > 0) {
+			userId = ids[0];
+		}
+		return userPayInfoDao.queryUserPayInfoList(userId);
 	}
 	
 	public void saveUserPayInfo(UserPayInfo payInfo) {
