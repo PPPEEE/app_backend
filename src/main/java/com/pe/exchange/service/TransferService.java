@@ -1,8 +1,6 @@
 package com.pe.exchange.service;
 
-import com.pe.exchange.common.Result;
 import com.pe.exchange.common.ResultEnum;
-import com.pe.exchange.common.Results;
 import com.pe.exchange.dao.TransferLogDao;
 import com.pe.exchange.dao.UserBalanceDao;
 import com.pe.exchange.dao.UserDao;
@@ -13,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 
 @Slf4j
 @Service
@@ -28,22 +28,23 @@ public class TransferService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void transfer(String address,Integer amount){
+    public void transfer(String address,String amount){
+        BigDecimal decimal=new BigDecimal(amount);
         Integer userId=UserUtil.get();
         Integer destUserId=userDao.findIdByAddress(address);
         if(destUserId==null){
             throw new BizException(ResultEnum.USER_NOT_EXISTS);
         }
-        Integer balance=userBalanceDao.findBanalceByUserId(userId);
-        if(balance.compareTo(amount)<0){
+        BigDecimal balance=userBalanceDao.findBanalceByUserId(userId);
+        if(balance.compareTo(decimal)<0){
             throw new BizException(ResultEnum.INSUFFICIENT_BALANCE);
         }
-        userBalanceDao.subBalance(userId, amount);
-        userBalanceDao.addBalance(destUserId,amount);
+        userBalanceDao.subBalance(userId, decimal);
+        userBalanceDao.addBalance(destUserId,decimal);
 
         //保存一条转账记录
         TransferLog transferLog=new TransferLog();
-        transferLog.setAmount(amount);
+        transferLog.setAmount(decimal);
         transferLog.setFromUserId(userId);
         transferLog.setToUserId(destUserId);
         transferLogDao.save(transferLog);

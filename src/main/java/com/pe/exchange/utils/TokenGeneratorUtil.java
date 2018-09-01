@@ -4,6 +4,7 @@ import java.security.MessageDigest;
 import java.util.UUID;
 
 public class TokenGeneratorUtil {
+
     private static final char[] hexCode = "0123456789abcdef".toCharArray();
 
     public TokenGeneratorUtil() {

@@ -2,6 +2,7 @@ package com.pe.exchange.entity;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.math.BigDecimal;
@@ -23,12 +24,14 @@ public class UserBalance {
     /**
      *  余额
      */
-    private Integer balance;
+    @Column(precision = 6)
+    private BigDecimal balance;
 
     /**
      * 锁定余额
      */
-    private Integer lockBalance;
+    @Column(precision = 6)
+    private BigDecimal lockBalance;
 
 
 }

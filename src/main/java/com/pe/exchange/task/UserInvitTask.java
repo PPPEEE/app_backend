@@ -52,7 +52,7 @@ public class UserInvitTask {
                 userInvit = new UserInvit();
                 userInvit.setUserId(userId);
                 userInvit.setInvitedUserId(invit.getUserId());
-                userInvit.setLevel(userInvit.getLevel() + 1);
+                userInvit.setLevel(invit.getLevel() + 1);
                 if (userInvit.getLevel() < 10) {
                     list.add(userInvit);
                 }

@@ -50,7 +50,7 @@ public class TransferController {
 
         @ApiOperation("转账")
         @PostMapping("transfer")
-        public Result transfer(@RequestParam("address") String address,@RequestParam("amount") Integer amount){
+        public Result transfer(@RequestParam("address") String address,@RequestParam("amount") String amount){
                 transferService.transfer(address,amount);
                 return Results.success();
         }
