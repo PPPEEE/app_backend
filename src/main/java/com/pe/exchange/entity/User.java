@@ -1,16 +1,16 @@
 package com.pe.exchange.entity;
 
-import java.io.Serializable;
-import java.util.List;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Transient;
-
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import java.io.Serializable;
+import java.util.List;
 
 @Data
 @Entity
@@ -25,6 +25,15 @@ public class User implements Serializable{
     private String refereeId; //推荐人ID
     @ApiModelProperty(hidden = true)
     private String address;
+
+    /**
+     * 级别
+     * 0、临时用户
+     * 1、普通用户
+     * 2、VIP
+     */
+    @ColumnDefault("0")
+    private  Integer level;
     
     @Transient
     private List<UserPayInfo> userPayInfo;
