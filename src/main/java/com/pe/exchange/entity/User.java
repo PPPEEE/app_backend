@@ -33,7 +33,7 @@ public class User implements Serializable{
      * 2、VIP
      */
     @ColumnDefault("0")
-    private  Integer level;
+    private  Integer userLevel;
     
     @Transient
     private List<UserPayInfo> userPayInfo;
