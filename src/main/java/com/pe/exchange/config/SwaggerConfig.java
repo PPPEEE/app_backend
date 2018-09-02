@@ -26,6 +26,22 @@ public class SwaggerConfig implements WebMvcConfigurer {
     @Value("${spring.profiles.active}")
     String env;
 
+
+   /* @Autowired UserDao userDao;
+    @PostConstruct
+    private void init(){
+        if(!env.equals("prod")){
+            Integer userId1=99999;
+            Integer userId2=88888;
+            if(userDao.findById(userId1).orElse(null)==null){
+                User user=new User();
+                user.setId(userId1);
+                user.setAddress("addr99999");
+                user.setTelephone("13999999");
+                userDao.save(user);
+            }
+        }
+    }*/
     @Bean
     public Docket createRestApi() {
         ParameterBuilder ticketPar = new ParameterBuilder();
