@@ -11,7 +11,8 @@ import javax.annotation.PostConstruct;
 
 @Component
 public class PlatformConfig {
-    @Autowired UserBonusLogDao userBonusLogDao;
+    @Autowired 
+    UserBonusLogDao userBonusLogDao;
 
     private volatile UserBonusConfig userBonusConfig;
 
