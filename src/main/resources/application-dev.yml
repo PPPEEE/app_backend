@@ -6,9 +6,9 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/pe_app?autoReconnect=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&allowMultiQueries=true&useSSL=false
-    username: root
-    password: ROOT
+    url: jdbc:mysql://120.132.120.253:3306/pe?autoReconnect=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&allowMultiQueries=true&useSSL=false
+    username: pe
+    password: Pe123456!
 
   jpa:
     database: mysql

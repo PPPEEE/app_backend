@@ -42,6 +42,7 @@ public class User implements Serializable{
      * 2、VIP
      */
     @ColumnDefault("0")
+    @Column(insertable = false)
     private  Integer userLevel;
     
     //1：会员 2：普通用户

@@ -3,14 +3,10 @@ package com.pe.exchange.interceptor;
 import com.alibaba.fastjson.JSON;
 import com.pe.exchange.common.Result;
 import com.pe.exchange.common.Results;
-import com.pe.exchange.entity.DKDealInfo;
 import com.pe.exchange.entity.User;
 import com.pe.exchange.redis.RedisOps;
 import com.pe.exchange.utils.UserUtil;
 import lombok.extern.slf4j.Slf4j;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;

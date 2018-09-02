@@ -5,15 +5,16 @@ import com.pe.exchange.common.Results;
 import com.pe.exchange.service.TransferService;
 import com.pe.exchange.utils.QrCodeUtil;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.imageio.ImageIO;
@@ -27,6 +28,14 @@ import java.awt.image.BufferedImage;
 @RequestMapping("transfer")
 public class TransferController {
 
+    @Data
+    @ApiModel
+    public static class TransferBean{
+        @ApiModelProperty(value = "目标地址,转换时填,兑换时不填",example = "")
+        private String address;
+        @ApiModelProperty(value = "转账数量",example = "8000")
+        private String amount;
+    }
     private static final String ORCODE_FORMAT = "JPEG";
 
     @Autowired
@@ -47,22 +56,19 @@ public class TransferController {
     }
 
     @ApiOperation("转账")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "address", value = "目标地址", paramType = "query", dataType = "String", required = true),
-        @ApiImplicitParam(name = "amount", value = "金额", paramType = "query", dataType = "String", required = true)})
+
     @PostMapping("transfer")
-    public Result transfer(@RequestParam("address") String address, @RequestParam("amount") String amount) {
-        transferService.transfer(address, amount);
+    public Result transfer(@RequestBody TransferBean transferBean) {
+        transferService.transfer(transferBean.getAddress(), transferBean.getAmount());
         return Results.success();
     }
 
+
     @ApiOperation("兑换")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "address", value = "目标地址", paramType = "query", dataType = "String", required = true),
-        @ApiImplicitParam(name = "amount", value = "金额", paramType = "query", dataType = "String", required = true)})
+
     @PostMapping("exchange")
-    public Result exchange(@RequestParam("amount") String amount) {
-        transferService.exchange(amount);
+    public Result exchange(@RequestBody TransferBean transferBean) {
+        transferService.exchange(transferBean.getAmount());
         return Results.success();
     }
 }
