@@ -8,7 +8,10 @@
 
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/src/main/resources</directory>
+            <directory>${project.basedir}/target/classes</directory>
+            <includes>
+                <include>*.yml</include>
+            </includes>
             <outputDirectory>/config</outputDirectory>
         </fileSet>
             
