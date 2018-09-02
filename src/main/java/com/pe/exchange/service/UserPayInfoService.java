@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class UserPayInfoService {
-	private Logger log = LoggerFactory.getLogger(UserPayInfoService.class);
 	@Autowired
 	private UserPayInfoDao userPayInfoDao;
 	
@@ -25,7 +24,7 @@ public class UserPayInfoService {
 	RedisOps redisOps;
 	 
 	public List<UserPayInfo> findUserPayInfoList(Integer...ids){
-		Integer userId = UserUtil.get();
+		Integer userId = UserUtil.get().getId();
 		if(ids.length > 0) {
 			userId = ids[0];
 		}

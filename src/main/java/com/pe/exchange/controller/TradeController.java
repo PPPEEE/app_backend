@@ -8,7 +8,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +30,7 @@ public class TradeController {
         trade.setPrice(new BigDecimal(price));
         trade.setNum(new BigDecimal(num));
         trade.setAmount(trade.getPrice().multiply(trade.getNum()));
-        trade.setUserId(UserUtil.get());
+        trade.setUserId(UserUtil.get().getId());
        return tradeService.publish(trade);
 
     }

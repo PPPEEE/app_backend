@@ -1,12 +1,14 @@
 package com.pe.exchange.service;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.pe.exchange.common.ResultEnum;
 import com.pe.exchange.config.SmsConfig;
+import com.pe.exchange.dao.UserBalanceDao;
 import com.pe.exchange.dao.UserDao;
 import com.pe.exchange.dao.UserInfoDao;
-import com.pe.exchange.entity.DKDealInfo;
 import com.pe.exchange.entity.User;
+import com.pe.exchange.entity.UserBalance;
 import com.pe.exchange.entity.UserInfo;
 import com.pe.exchange.exception.BaseException;
 import com.pe.exchange.exception.BizException;
@@ -20,19 +22,19 @@ import com.pe.exchange.utils.TokenGeneratorUtil;
 import com.pe.exchange.utils.UserUtil;
 import com.pe.exchange.utils.VeriCodeUtils;
 import lombok.extern.slf4j.Slf4j;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 @Service
 public class UserService {
 
-	private Logger log = LoggerFactory.getLogger(UserService.class);
     private static final String VERI_CODE_FLAG = "veri";
     private static final String TOKEN_FLAG = "TOKEN";
     @Autowired
@@ -42,6 +44,8 @@ public class UserService {
 
     @Autowired
     UserDao userDao;
+
+    @Autowired UserBalanceDao userBalanceDao;
     
     @Autowired
     UserInfoDao userInfoDao;
@@ -50,7 +54,7 @@ public class UserService {
     
     public void updateUserInfo(UserInfo userInfo) {
     	try {
-    		userInfo.setUserId(UserUtil.get());
+    		userInfo.setUserId(UserUtil.get().getId());
     		log.info("开始执行修改用户信息,用户ID："+userInfo.getUserId());
     		userInfoDao.save(userInfo);
 		} catch (Exception e) {
@@ -97,13 +101,23 @@ public class UserService {
             userDao.save(user);
             user.setAddress(CopyBTCAddressUtil.generateAddress(user.getId()));
             userDao.save(user);
+            initUserBalance(user);
             if(user.getRefereeId()!=null){
                 userInvitTask.userInvit(user.getRefereeId(),user.getId());
             }
+
         } catch (Exception e) {
             log.error("数据插入失败",e);
             throw new SysException();
         }
+    }
+
+    private void initUserBalance(User user){
+        List<UserBalance> list=new ArrayList<>();
+
+        list.add(new UserBalance(user.getId(),0,"",new BigDecimal(0),new BigDecimal(0)));
+        list.add(new UserBalance(user.getId(),1,"",new BigDecimal(0),new BigDecimal(0)));
+        userBalanceDao.saveAll(list);
     }
     
     public void userNameExists(String userName) {
@@ -144,7 +158,9 @@ public class UserService {
             throw new BizException(ResultEnum.LOGIN_FAIL);
         }
         String token= TokenGeneratorUtil.generateValue();
-        redisOps.setWithTimeout(token,user.getId().toString(), 1000 * 60 * 30);
+        user.setPwd("");
+
+        redisOps.setWithTimeout(token, JSON.toJSONString(user), 1000 * 60 * 30);
         return token;
     }
 
