@@ -17,7 +17,7 @@ public class UserPayPwdService {
 	
 	
 	public boolean isExits(String... pwd) {
-		Integer userId = UserUtil.get();
+		Integer userId = UserUtil.get().getId();
 		UserPayInfo u= null;
 		if(pwd.length>0) {
 			u = userPayPwdDao.queryPayPwdExists(userId,pwd[0]);
@@ -31,7 +31,7 @@ public class UserPayPwdService {
 	}
 	
 	public void updatePayPwd(String pwd) {
-		Integer userId = UserUtil.get();
+		Integer userId = UserUtil.get().getId();
 		UserPayPwdInfo upp = new UserPayPwdInfo();
 		upp.setUserId(userId);
 		upp.setPwd(encryptPwd(pwd));

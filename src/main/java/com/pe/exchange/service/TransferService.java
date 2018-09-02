@@ -24,7 +24,7 @@ public class TransferService {
     @Autowired TransferLogDao transferLogDao;
 
     public String getAddress(){
-        Integer userId= UserUtil.get();
+        Integer userId= UserUtil.get().getId();
         User user=userDao.findById(userId).get();
         return user.getAddress();
     }
@@ -32,7 +32,7 @@ public class TransferService {
     @Transactional(rollbackFor = Exception.class)
     public void transfer(String address,String amount){
         BigDecimal bigAmount=new BigDecimal(amount);
-        Integer userId=UserUtil.get();
+        Integer userId=UserUtil.get().getId();
         User destUser=userDao.findByAddress(address);
         if(destUser==null){
             throw new BizException(ResultEnum.USER_NOT_EXISTS);
@@ -57,7 +57,7 @@ public class TransferService {
 
     @Transactional(rollbackFor = Exception.class)
     public void exchange(String amount){
-        Integer userId=UserUtil.get();
+        Integer userId=UserUtil.get().getId();
         BigDecimal bigAmount = new BigDecimal(amount);
         UserBalance balance=userBalanceDao.findByUserIdAndCoinType(userId,0);
         if(balance.getBalance().compareTo(bigAmount)<0){

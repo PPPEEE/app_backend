@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.pe.exchange.common.Result;
 import com.pe.exchange.common.Results;
 import com.pe.exchange.entity.DKDealInfo;
+import com.pe.exchange.entity.User;
 import com.pe.exchange.redis.RedisOps;
 import com.pe.exchange.utils.UserUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,6 @@ import java.io.PrintWriter;
 @Slf4j
 public class LoginInterceptor implements HandlerInterceptor {
 	
-	private Logger log = LoggerFactory.getLogger(LoginInterceptor.class);
 	@Autowired
 	private RedisOps redisOps;
 	/*
@@ -64,7 +64,8 @@ public class LoginInterceptor implements HandlerInterceptor {
 			}
 			return false;
 		}
-		UserUtil.set(Integer.valueOf(redisOps.get(token)));
+		String s = redisOps.get(token);
+		UserUtil.set(JSON.parseObject(s, User.class));
 		return true;
 	}
 

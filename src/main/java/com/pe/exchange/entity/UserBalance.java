@@ -1,6 +1,8 @@
 package com.pe.exchange.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,7 +11,8 @@ import java.math.BigDecimal;
 
 @Data
 @Entity
-
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserBalance {
     @Id
     private Integer userId;

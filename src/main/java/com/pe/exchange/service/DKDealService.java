@@ -26,8 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class DKDealService {
 	
-	private Logger log = LoggerFactory.getLogger(DKDealInfo.class);
-
 	@Autowired
 	private DKDealDao dkDealDao;
 	
@@ -47,9 +45,9 @@ public class DKDealService {
 	 * @return
 	 */
 	public Integer getUserDKNumber() {
-	  Integer userId = UserUtil.get();
+	  User user = UserUtil.get();
 	 
-	  List<DKDealInfo> dkList = dkDealDao.getDKTotalNumber(userId);
+	  List<DKDealInfo> dkList = dkDealDao.getDKTotalNumber(user.getId());
 	  return computeDKTotal(dkList);
 	}
 	
@@ -71,11 +69,11 @@ public class DKDealService {
 	}
 	
 	public void saveDKDeal(DKDealInfo dealInfo) {
-		Integer userId = UserUtil.get();
+		User user = UserUtil.get();
 		//绑定订单号
 		dealInfo.setOrderNumber(VeriCodeUtils.getOrderIdByUUId());
 		dealInfo.setMoney(dealInfo.getDealNumber() * 0.8);
-		dealInfo.setUser_id(userId);
+		dealInfo.setUser_id(user.getId());
 		int total = 0;
 		if(2 == dealInfo.getType()) {
 			total = getUserDKNumber();
@@ -93,7 +91,7 @@ public class DKDealService {
 	public List<DKDealInfo> findDKDeailList(int type){
 		List<DKDealInfo> list =  null;
 		if(type == 0) {
-			list = dkDealDao.findUserDKList(UserUtil.get());
+			list = dkDealDao.findUserDKList(UserUtil.get().getId());
 		}else {
 			list = dkDealDao.findTypeDKList(type);
 		}
@@ -132,7 +130,7 @@ public class DKDealService {
 		dkDealInfo.setTimes(dkInfo.getTimes());
 		//初始买入订单默认状态为等待付款
 		dkDealInfo.setStatus(3);
-		dkDealInfo.setUser_id(UserUtil.get());
+		dkDealInfo.setUser_id(UserUtil.get().getId());
 		dkDealInfo.setType(dkInfo.getType()==1?2:1);
 		dkInfo.setStatus(3);
 		try {

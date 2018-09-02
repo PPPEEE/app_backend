@@ -1,6 +1,5 @@
 package com.pe.exchange.service;
 
-import com.pe.exchange.utils.UserUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +13,14 @@ public class TransferServiceTest {
     TransferService transferService;
     @Test
     public void transfer() {
-        UserUtil.set(111);
+       // UserUtil.set(111);
         transferService.transfer("111111","100");
 
     }
 
     @Test
     public void getAddress(){
-        UserUtil.set(1);
+       // UserUtil.set(1);
         String address = transferService.getAddress();
         System.out.println("=============");
         System.out.println(address);
