@@ -1,19 +1,22 @@
 package com.pe.exchange.entity;
 
-import java.io.Serializable;
-import java.util.List;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import java.io.Serializable;
+import java.util.List;
 
 @Data
 @Entity
+@Table(indexes = {@Index(columnList = "address"),@Index(columnList = "userName"),@Index(columnList = "telephone")})
 public class User implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +28,15 @@ public class User implements Serializable{
     private String refereeId; //推荐人ID
     @ApiModelProperty(hidden = true)
     private String address;
+
+    /**
+     * 级别
+     * 0、临时用户
+     * 1、普通用户
+     * 2、VIP
+     */
+    @ColumnDefault("0")
+    private  Integer userLevel;
     
     //1：会员 2：普通用户
     private String type;

@@ -1,14 +1,15 @@
 package com.pe.exchange.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -19,7 +20,8 @@ public class TransferLog {
     private Integer id;
     private Integer fromUserId;
     private Integer toUserId;
-    private Integer amount;
+    @Column(precision = 19,scale = 6)
+    private BigDecimal amount;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime addTime;
     /**

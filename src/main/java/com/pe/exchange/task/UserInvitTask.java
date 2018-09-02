@@ -6,6 +6,7 @@ import com.pe.exchange.entity.User;
 import com.pe.exchange.entity.UserInvit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -37,11 +38,19 @@ public class UserInvitTask {
                 // 如果邀请人不存在,则结束
                 return;
             }
+            //获取邀请人的历史邀请人数
+            UserInvit param=new UserInvit();
+            param.setUserId(userId);
+            param.setInvitLevel(1);
+            Example<UserInvit> example=Example.of(param);
+            long count = userInvitDao.count(example);
+
             List<UserInvit> list = new ArrayList<>();
             UserInvit userInvit = new UserInvit();
             userInvit.setUserId(userId);
             userInvit.setInvitedUserId(invitedUserId);
-            userInvit.setLevel(1);
+            userInvit.setInvitLevel(1);
+            userInvit.setInvitOrder((int)count+1);
             list.add(userInvit);
 
             // 获取邀请人的所有上层关系
@@ -52,8 +61,8 @@ public class UserInvitTask {
                 userInvit = new UserInvit();
                 userInvit.setUserId(userId);
                 userInvit.setInvitedUserId(invit.getUserId());
-                userInvit.setLevel(userInvit.getLevel() + 1);
-                if (userInvit.getLevel() < 10) {
+                userInvit.setInvitLevel(invit.getInvitLevel() + 1);
+                if (userInvit.getInvitLevel() < 10) {
                     list.add(userInvit);
                 }
             }

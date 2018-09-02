@@ -3,10 +3,12 @@ package com.pe.exchange.entity;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -32,7 +34,8 @@ public class UserBonusLog {
     /**
      * 奖励金额,主要是DN
      */
-    private Integer amount;
+    @Column(precision = 19,scale = 6)
+    private BigDecimal amount;
     private LocalDateTime addTime;
     /**
      * 状态,1正常  2取消

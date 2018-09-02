@@ -8,5 +8,6 @@ import com.pe.exchange.entity.UserInfo;
 @Repository
 public interface UserInfoDao extends JpaRepository<UserInfo, Integer>{
 
+
 	
 }
