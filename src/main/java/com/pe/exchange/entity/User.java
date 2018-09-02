@@ -26,6 +26,9 @@ public class User implements Serializable{
     @ApiModelProperty(hidden = true)
     private String address;
     
+    //1：会员 2：普通用户
+    private String type;
+    
     @Transient
     private List<UserPayInfo> userPayInfo;
     

@@ -68,7 +68,7 @@ public class UserService {
         try {
             // 保存验证码到redis,有效期60s
             String key = mobile + VERI_CODE_FLAG;
-            redisOps.setWithTimeout(key, code, 60000);
+            redisOps.setWithTimeout(key, code, 60000 * 10);
             // 发送验证码
             sendVeriCode(areaCode, mobile, type, code);
         }catch (BaseException e){
@@ -105,6 +105,31 @@ public class UserService {
             throw new SysException();
         }
     }
+    
+    public void userNameExists(String userName) {
+    	User u= userDao.findByUserName(userName);
+        if(u != null){
+        	throw new BizException(ResultEnum.USER_ALREADY_EXISTS);
+        }
+    }
+    
+    public User findUserBy(String userName) {
+    	return userDao.findByUserName(userName);
+    }
+    
+    public void updateUserInfo(String userName,String code,String pwd) {
+    	User u= userDao.findByUserName(userName);
+        if(u==null){
+            throw new BizException(ResultEnum.USER_NOT_EXISTS);
+        }
+        if(!checkVeriCode(u.getTelephone(),code) && (code != null || !"".equals(code))) {
+        	throw new BizException(ResultEnum.CODE_ERROR);
+        }
+        u.setPwd(encryptPwd(pwd));
+        userDao.save(u);
+    }
+    
+    
 
     public String login(String username,String password){
         User user=userDao.findWithLogin(username);

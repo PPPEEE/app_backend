@@ -33,9 +33,9 @@ public class FileControllerUtils {
      */
     @PostMapping("/upload")
     @ResponseBody
-    public Result upload(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+    public Result upload(@RequestParam("file") MultipartFile file,@RequestParam("type")String type, HttpServletRequest request) {
         if (!file.isEmpty()) {
-            String saveFileName = file.getOriginalFilename();
+            String saveFileName = type+"_"+file.getOriginalFilename();
             File saveFile = new File(request.getSession().getServletContext().getRealPath("/upload/") + saveFileName);
             if (!saveFile.getParentFile().exists()) {
                 saveFile.getParentFile().mkdirs();
@@ -47,10 +47,10 @@ public class FileControllerUtils {
                 out.close();
                 return Results.success(saveFile.getName());
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
+               // e.printStackTrace();
                 return Results.fail("上传失败," + e.getMessage());
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 return  Results.fail("上传失败," + e.getMessage());
             }
         } else {
