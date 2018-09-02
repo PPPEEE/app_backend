@@ -113,14 +113,20 @@ public class UserService {
         }
     }
     
-    public User findUserBy(String userName) {
-    	return userDao.findByUserName(userName);
+    public User findUserBy() {
+    	int userId = UserUtil.get();
+    	User u = userDao.findById(userId).get();
+    	u.setPwd("");
+    	return u;
     }
     
-    public void updateUserInfo(String userName,String code,String pwd) {
+    public void updateUserInfo(String userName,String telephone,String code,String pwd) {
     	User u= userDao.findByUserName(userName);
         if(u==null){
             throw new BizException(ResultEnum.USER_NOT_EXISTS);
+        }
+        if(!u.getTelephone().equals(telephone)) {
+        	throw new BizException(304,"联系方式错误！");
         }
         if(!checkVeriCode(u.getTelephone(),code) && (code != null || !"".equals(code))) {
         	throw new BizException(ResultEnum.CODE_ERROR);

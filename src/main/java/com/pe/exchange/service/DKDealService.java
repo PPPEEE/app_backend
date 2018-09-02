@@ -10,10 +10,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pe.exchange.dao.DKDealAppealDao;
 import com.pe.exchange.dao.DKDealDao;
 import com.pe.exchange.dao.UserDao;
+import com.pe.exchange.entity.Appeal;
 import com.pe.exchange.entity.DKDealInfo;
 import com.pe.exchange.entity.User;
+import com.pe.exchange.exception.BizException;
 import com.pe.exchange.exception.SysException;
 import com.pe.exchange.redis.RedisOps;
 import com.pe.exchange.utils.OderQueueUtil;
@@ -39,6 +42,9 @@ public class DKDealService {
 	 
 	 @Autowired
 	 UserPayInfoService userPayInfoService;
+	 
+	 @Autowired
+	 DKDealAppealDao dkDealAppealDao; 
 	 
 	 private final String key = "_orderKey";
 	
@@ -194,6 +200,20 @@ public class DKDealService {
 	public String getOderRedisKey(Integer id,Integer type) {
 		DKDealInfo dkInfo = dkDealDao.findById(id).get();
 		return dkInfo.getId() + "_" + type + key;
+	}
+	
+	
+	public void oderAppeal(Integer id,String fileName,String desc) {
+		DKDealInfo dk = dkDealDao.findById(id).get();
+		if(dk.getType() == 7) {
+			Appeal appeal = new Appeal();
+			appeal.setDkId(id);
+			appeal.setFilePngName(fileName);
+			appeal.setDescText(desc);
+			dkDealAppealDao.save(appeal);
+		}else {
+			throw new BizException(305, "该订单状态不可申诉！");
+		}
 	}
 	
 }

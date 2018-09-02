@@ -1,10 +1,11 @@
 package com.pe.exchange.entity;
 
-import com.alibaba.fastjson.JSON;
-import lombok.Data;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.alibaba.fastjson.JSON;
+
+import lombok.Data;
 
 /**
  * 奖励比例,统一使用千分之,具体比较直接填int值

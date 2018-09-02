@@ -1,7 +1,10 @@
 package com.pe.exchange.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,7 +49,7 @@ public class DKDealController {
 	 * @return
 	 */
 	@PostMapping("releaseDK")
-	public Result releaseDk(DKDealInfo dealInfo) {
+	public Result releaseDk(@RequestBody DKDealInfo dealInfo) {
 		dkDealService.saveDKDeal(dealInfo);
 		return Results.success();
 	}
@@ -57,8 +60,8 @@ public class DKDealController {
 	 * @return
 	 */
 	@PostMapping("dkByType")
-	public Result findDKDeailByType(@RequestParam("type") int type) {
-		return Results.success(dkDealService.findDKDeailList(type));
+	public Result findDKDeailByType(@RequestBody Map<String, String> param) {
+		return Results.success(dkDealService.findDKDeailList(Integer.valueOf(param.get("type"))));
 	}
 	
 	/***
@@ -67,8 +70,8 @@ public class DKDealController {
 	 * @return
 	 */
 	@PostMapping("findDkById")
-	public Result findDKById(@RequestParam("id") Integer id) {
-		return Results.success(dkDealService.findDkById(id));
+	public Result findDKById(@RequestBody Map<String, Integer> param) {
+		return Results.success(dkDealService.findDkById(param.get("id")));
 	}
 	
 	/***
@@ -77,8 +80,8 @@ public class DKDealController {
 	 * @return
 	 */
 	@PostMapping("dkPurchase")
-	public Result dkDeailPurchase(Integer id) {
-		dkDealService.dkDeailPurchase(id);
+	public Result dkDeailPurchase(@RequestBody Map<String, Integer> param) {
+		dkDealService.dkDeailPurchase(param.get("id"));
 		return Results.success();
 	}
 	
@@ -88,8 +91,8 @@ public class DKDealController {
 	 * @return
 	 */
 	@PostMapping("commit")
-	public Result commitOder(Integer id) {
-		dkDealService.commitDK(id);
+	public Result commitOder(@RequestBody Map<String, Integer> param) {
+		dkDealService.commitDK(param.get("id"));
 		return Results.success();
 	}
 	
@@ -99,9 +102,9 @@ public class DKDealController {
 	 * @return
 	 */
 	@PostMapping("paymentCommitOder")
-	public Result paymentCommitOder(Integer id) {
+	public Result paymentCommitOder(@RequestBody Map<String, Integer> param) {
 		
-		dkDealService.paymentCommitOder(id);
+		dkDealService.paymentCommitOder(param.get("id"));
 		return Results.success();
 	}
 	
@@ -111,9 +114,9 @@ public class DKDealController {
 	 * @return
 	 */
 	@PostMapping("getExpiryTime")
-	public Result getExpiryTime(@RequestParam("oderId") Integer oderId) {
-		Long times = 0L;
-		String rKey = dkDealService.getOderRedisKey(oderId,1);
+	public Result getExpiryTime(@RequestBody Map<String, Integer> param) {
+		Long times = 0L; 
+		String rKey = dkDealService.getOderRedisKey(param.get("oderId"),1);
 		if(OderQueueUtil.getQueues().containsKey(rKey)) {
 			times = OderQueueUtil.get(rKey);
 		}
@@ -128,8 +131,8 @@ public class DKDealController {
 	 * @return
 	 */
 	@PostMapping("oderAppeal")
-	public Result oderAppeal(Integer id,String fileName,String desc) {
-		
+	public Result oderAppeal(@RequestBody Map<String, String> param) {
+		dkDealService.oderAppeal(Integer.valueOf(param.get("id")), param.get("fileName"), param.get("desc"));
 		return Results.success();
 	}
 }
