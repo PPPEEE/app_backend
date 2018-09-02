@@ -32,17 +32,21 @@ public class ScheduledService {
 		while(it.hasNext()) {
 			key = it.next();
 			Long times=redisOps.getOutTimes(key);
+			System.out.println(key+"_"+times);
 			if(times<1) {
 				DKDealInfo dk = dkDealDao.findById(Integer.valueOf(key.split("_")[0])).get();
-				if(3 == dk.getStatus()) {
-					dk.setStatus(4);
-					dkDealDao.save(dk);
+				if(3 == dk.getStatus() && "1".equals(key.split("_")[1])) {
+					dk.setStatus(Integer.valueOf(key.split("_")[key.split("_").length-1]));
+				}else if(6 == dk.getStatus()) {
+					dk.setStatus(7);
 				}
+				dkDealDao.save(dk);
 				OderQueueUtil.remove(key);
+				redisOps.delete(key);
+				it = map.keySet().iterator();
 			}else {
 				OderQueueUtil.setOderQueue(key, times);
 			}
 		}
-		
 	}
 }

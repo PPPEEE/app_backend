@@ -7,6 +7,7 @@ import com.pe.exchange.entity.User;
 import com.pe.exchange.entity.UserInfo;
 import com.pe.exchange.entity.UserPayInfo;
 import com.pe.exchange.service.UserPayInfoService;
+import com.pe.exchange.service.UserPayPwdService;
 import com.pe.exchange.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -36,6 +37,8 @@ public class UserController {
     @Autowired
     UserPayInfoService userPayInfoService;
 
+    @Autowired
+    UserPayPwdService userPayPwdService;
     @SuppressWarnings("rawtypes")
 
 
@@ -136,4 +139,56 @@ public class UserController {
     	userPayInfoService.saveUserPayInfo(payInfo);
     	return Results.success();
     }
+    
+    
+    /***
+     * 查询用户信息
+     * @param userName
+     * @return
+     */
+    @PostMapping("findUserBy")
+    public Result findUserBy(@RequestParam("userName") String userName) {
+    	return Results.success(userService.findUserBy(userName));
+    }
+    
+    /***
+     * 找回密码
+     * @param userName
+     * @return
+     */
+    @PostMapping("updateUser")
+    public Result updateUserInfo(@RequestParam("userName") String userName,@RequestParam("code")String code,@RequestParam("pwd")String pwd) {
+    	userService.updateUserInfo(userName,code,pwd);
+    	return Results.success();
+    }
+    
+    /***
+     * 用户名是否存在
+     * @param userName
+     * @return
+     */
+    @PostMapping("userNameExists")
+    public Result userNameExists(@RequestParam("userName") String userName) {
+    	userService.userNameExists(userName);
+    	return Results.success();
+    }
+    
+    
+    @PostMapping("userPayPwdExists")
+    public Result userPayPwdExits() {
+    	
+    	return Results.success(userPayPwdService.isExits());
+    }
+    
+    @PostMapping("userPayPwdIsOk")
+    public Result userPayPwdIsOk(@RequestParam("payPwd") String payPwd) {
+    	return Results.success(userPayPwdService.isExits(payPwd));
+    }
+    
+    @PostMapping("setPayPwd")
+    public Result setPayPwd(@RequestParam("payPwd") String payPwd) {
+    	userPayPwdService.updatePayPwd(payPwd);
+    	return Results.success();
+    }
+    
 }

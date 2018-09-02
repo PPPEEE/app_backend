@@ -44,6 +44,9 @@ public class User implements Serializable{
     @ColumnDefault("0")
     private  Integer userLevel;
     
+    //1：会员 2：普通用户
+    private String type;
+    
     @Transient
     private List<UserPayInfo> userPayInfo;
     

@@ -1,7 +1,9 @@
 package com.pe.exchange.service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,7 +121,9 @@ public class DKDealService {
 	}
 	
 	public void dkDeailPurchase(Integer id) {
+		Integer status = 0;
 		DKDealInfo dkInfo = dkDealDao.findById(id).get();
+		status = dkInfo.getStatus();
 		DKDealInfo dkDealInfo = new DKDealInfo();
 		dkDealInfo.setDealNumber(dkInfo.getDealNumber());
 		dkDealInfo.setMinNumber(dkInfo.getMinNumber());
@@ -134,9 +138,12 @@ public class DKDealService {
 		try {
 			dkDealDao.save(dkInfo);
 			dkDealDao.save(dkDealInfo);
-			String redisKey = getOderRedisKey(id);
+			String redisKey = getOderRedisKey(id,1)+"_"+status;
+			String _redisKey = getOderRedisKey(dkDealInfo.getId(),1)+"_4";
 			redisOps.setWithTimeout(redisKey, "", 1000 * 60 * dkInfo.getTimes());
+			redisOps.setWithTimeout(_redisKey, "", 1000 * 60 * dkInfo.getTimes());
 			OderQueueUtil.setOderQueue(redisKey, 0l);
+			OderQueueUtil.setOderQueue(_redisKey, 0l);
 		} catch (Exception e) {
 		}
 	}
@@ -151,12 +158,42 @@ public class DKDealService {
 		DKDealInfo dealInfo = dkDealDao.findUserDKByNumber(number, dkInfo.getUser_id());
 		dealInfo.setStatus(1);
 		
+		Set<DKDealInfo> entitys = new HashSet<DKDealInfo>();
+		entitys.add(dkInfo);
+		entitys.add(dealInfo);
+		dkDealDao.saveAll(entitys);
 		
+	/*	String redisKey = getOderRedisKey(id)+"_7";
+		String _redisKey = getOderRedisKey(dealInfo.getId())+"_7";
+		if(OderQueueUtil.getQueues().containsKey(arg0)) {
+			
+		}*/
 	}
 	
-	public String getOderRedisKey(Integer id) {
+	
+	public void paymentCommitOder(Integer id) {
+		
+		DKDealInfo dk = dkDealDao.findById(id).get();
+		dk.setStatus(6);
+		DKDealInfo dealInfo = dkDealDao.findUserDKByNumber(dk.getOrderNumber(), dk.getUser_id());
+		dealInfo.setStatus(6);
+		
+		Set<DKDealInfo> entitys = new HashSet<DKDealInfo>();
+		entitys.add(dk);
+		entitys.add(dealInfo);
+		dkDealDao.saveAll(entitys);
+		
+		String redisKey = getOderRedisKey(id,2);
+		String _redisKey = getOderRedisKey(dealInfo.getId(),2);
+		redisOps.setWithTimeout(redisKey, "", 1000 * 60 );
+		redisOps.setWithTimeout(_redisKey, "", 1000 * 60);
+		OderQueueUtil.setOderQueue(redisKey, 0l);
+		OderQueueUtil.setOderQueue(_redisKey, 0l);
+	}
+	
+	public String getOderRedisKey(Integer id,Integer type) {
 		DKDealInfo dkInfo = dkDealDao.findById(id).get();
-		return dkInfo.getId() + "_" + dkInfo.getOrderNumber() + key;
+		return dkInfo.getId() + "_" + type + key;
 	}
 	
 }
