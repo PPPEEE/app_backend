@@ -29,24 +29,41 @@ public class TransferService {
 
     @Transactional(rollbackFor = Exception.class)
     public void transfer(String address,String amount){
-        BigDecimal decimal=new BigDecimal(amount);
+        BigDecimal bigAmount=new BigDecimal(amount);
         Integer userId=UserUtil.get();
         Integer destUserId=userDao.findIdByAddress(address);
         if(destUserId==null){
             throw new BizException(ResultEnum.USER_NOT_EXISTS);
         }
-        BigDecimal balance=userBalanceDao.findBanalceByUserId(userId);
-        if(balance.compareTo(decimal)<0){
+        BigDecimal balance=userBalanceDao.findBanalceByUserIdAndCoinType(userId,0);
+        if(balance.compareTo(bigAmount)<0){
             throw new BizException(ResultEnum.INSUFFICIENT_BALANCE);
         }
-        userBalanceDao.subBalance(userId, decimal);
-        userBalanceDao.addBalance(destUserId,decimal);
+        userBalanceDao.subDKBalance(userId, bigAmount);
+        BigDecimal dkAmount = bigAmount.multiply(new BigDecimal(80)).divide(new BigDecimal(100));
+        BigDecimal dnAmount = bigAmount.subtract(dkAmount);
+        userBalanceDao.addDKBalance(destUserId,dkAmount);
+        userBalanceDao.addDNBalance(destUserId,dnAmount);
 
         //保存一条转账记录
         TransferLog transferLog=new TransferLog();
-        transferLog.setAmount(decimal);
+        transferLog.setAmount(bigAmount);
         transferLog.setFromUserId(userId);
         transferLog.setToUserId(destUserId);
         transferLogDao.save(transferLog);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void exchange(String amount){
+        Integer userId=UserUtil.get();
+        BigDecimal bigAmount = new BigDecimal(amount);
+        BigDecimal balance=userBalanceDao.findBanalceByUserIdAndCoinType(userId,0);
+        if(balance.compareTo(bigAmount)<0){
+            throw new BizException(ResultEnum.INSUFFICIENT_BALANCE);
+        }
+        BigDecimal dnAmount = bigAmount.multiply(new BigDecimal(6));
+        userBalanceDao.subDKBalance(userId, bigAmount);
+        userBalanceDao.addDNBalance(userId, dnAmount);
+
     }
 }

@@ -21,19 +21,19 @@ public class BonusRule {
     /**
      * 直推DK奖励1人
      */
-    private Integer invitNK1;
+    private Integer invitDK1;
     /**
      * 直推DK奖励2人
      */
-    private Integer invitNK2;
+    private Integer invitDK2;
     /**
      * 直推DK奖励3人
      */
-    private Integer invitNK3;
+    private Integer invitDK3;
     /**
      * 直推DK奖励4人及以上
      */
-    private Integer invitNK4;
+    private Integer invitDK4;
     /**
      * 团队兑换奖励
      */

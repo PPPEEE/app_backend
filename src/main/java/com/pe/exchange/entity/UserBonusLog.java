@@ -34,7 +34,7 @@ public class UserBonusLog {
     /**
      * 奖励金额,主要是DN
      */
-    @Column(precision = 6)
+    @Column(precision = 19,scale = 6)
     private BigDecimal amount;
     private LocalDateTime addTime;
     /**

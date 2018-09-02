@@ -1,6 +1,5 @@
 package com.pe.exchange.entity;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -40,30 +39,30 @@ public class Trade {
     /**
      * 数量
      */
-    @Column(precision = 8)
+    @Column(precision = 19,scale = 6)
     private BigDecimal num;
     /**
      * 单价
      */
-    @Column(precision = 2)
+    @Column(precision = 19,scale = 2)
     private BigDecimal price;
     /**
      * 金额
      */
-    @Column(precision = 2)
+    @Column(precision = 19,scale = 2)
     private BigDecimal amount;
 
     /**
      * 手续费
      */
-    @Column(precision = 2)
+    @Column(precision = 19,scale = 2)
     private BigDecimal fee;
 
     /**
      * 已成交数量
      */
     @ColumnDefault("0")
-    @Column(precision = 8)
+    @Column(precision = 19,scale = 6)
     private BigDecimal dealNum;
 
     private LocalDateTime addTime;

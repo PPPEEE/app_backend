@@ -20,7 +20,7 @@ public class TransferLog {
     private Integer id;
     private Integer fromUserId;
     private Integer toUserId;
-    @Column(precision = 6)
+    @Column(precision = 19,scale = 6)
     private BigDecimal amount;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime addTime;
