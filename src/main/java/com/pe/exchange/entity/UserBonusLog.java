@@ -1,5 +1,6 @@
 package com.pe.exchange.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -36,11 +37,14 @@ public class UserBonusLog {
      */
     @Column(precision = 19,scale = 6)
     private BigDecimal amount;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(insertable = false,columnDefinition = "datetime not NULL DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime addTime;
     /**
      * 状态,1正常  2取消
      */
     @ColumnDefault("1")
+    @Column(insertable = false)
     private Integer status;
 
 

@@ -47,7 +47,7 @@ public class BonusTask {
         List<UserBonusLog> bonusList=new ArrayList<>();
 
         Integer toUserId = transferLog.getToUserId();
-        User one = userDao.getOne(toUserId);
+        User one = userDao.findById(toUserId).get();
 
         //转账人获得对冲DN奖励,金额的80%
         BigDecimal bonusDN = transferLog.getAmount().multiply(new BigDecimal(platformConfig.getUserBonusConfig().getInvit().getDn())).divide(new BigDecimal(1000));

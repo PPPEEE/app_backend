@@ -32,7 +32,7 @@ public class UserInvitTask {
 
         try {
             Integer userId = Integer.valueOf(referrerUserId);
-            User one = userDao.getOne(userId);
+            User one = userDao.findById(userId).orElse(null);
 
             if (one == null) {
                 // 如果邀请人不存在,则结束

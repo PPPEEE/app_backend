@@ -1,5 +1,6 @@
 package com.pe.exchange.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -65,11 +66,14 @@ public class Trade {
     @Column(precision = 19,scale = 6)
     private BigDecimal dealNum;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(insertable = false,columnDefinition = "datetime not NULL DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime addTime;
 
     /**
      * 交易状态,0全部交易完成,1交易中,2取消
      */
     @ColumnDefault(value = "1")
+    @Column(insertable = false)
     private Integer status;
 }

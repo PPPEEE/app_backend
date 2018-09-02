@@ -1,8 +1,10 @@
 package com.pe.exchange.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -48,11 +50,15 @@ public class TradeLog {
      * 状态,1正常,0删除
      */
     @ColumnDefault("1")
+    @Column(insertable = false)
     private Integer status;
     /**
      * 源买(卖)单ID
      */
     private Integer sourceTradeId;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(insertable = false,columnDefinition = "datetime not NULL DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime addTime;
 
 

@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface UserBalanceDao extends JpaRepository<UserBalance,Integer> {
 
-    BigDecimal findBanalceByUserIdAndCoinType(Integer userId,Integer coin_type);
+    UserBalance findByUserIdAndCoinType(Integer userId,Integer coin_type);
     @Modifying
     @Query(value = "update user_balance set balance=balance+:amount where user_id=:userId and coin_type=0",nativeQuery = true)
     int addDKBalance(@Param("userId") Integer userId,@Param("amount")BigDecimal amount);

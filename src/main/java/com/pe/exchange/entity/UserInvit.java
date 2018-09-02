@@ -1,11 +1,14 @@
 package com.pe.exchange.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.time.LocalDateTime;
 
 /**
@@ -36,11 +39,13 @@ public class UserInvit {
     private Integer invitOrder;
 
 
-
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(insertable = false,columnDefinition = "datetime not NULL DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime addTime;
 
     /**
      * 用户级别,只读
      */
+    @Transient
     private Integer userLevel;
 }

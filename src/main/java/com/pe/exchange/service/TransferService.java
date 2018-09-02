@@ -5,6 +5,8 @@ import com.pe.exchange.dao.TransferLogDao;
 import com.pe.exchange.dao.UserBalanceDao;
 import com.pe.exchange.dao.UserDao;
 import com.pe.exchange.entity.TransferLog;
+import com.pe.exchange.entity.User;
+import com.pe.exchange.entity.UserBalance;
 import com.pe.exchange.exception.BizException;
 import com.pe.exchange.utils.UserUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -23,33 +25,33 @@ public class TransferService {
 
     public String getAddress(){
         Integer userId= UserUtil.get();
-        String address=userDao.findAddressById(userId);
-        return address;
+        User user=userDao.findById(userId).get();
+        return user.getAddress();
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void transfer(String address,String amount){
         BigDecimal bigAmount=new BigDecimal(amount);
         Integer userId=UserUtil.get();
-        Integer destUserId=userDao.findIdByAddress(address);
-        if(destUserId==null){
+        User destUser=userDao.findByAddress(address);
+        if(destUser==null){
             throw new BizException(ResultEnum.USER_NOT_EXISTS);
         }
-        BigDecimal balance=userBalanceDao.findBanalceByUserIdAndCoinType(userId,0);
-        if(balance.compareTo(bigAmount)<0){
+        UserBalance balance=userBalanceDao.findByUserIdAndCoinType(userId,0);
+        if(balance.getBalance().compareTo(bigAmount)<0){
             throw new BizException(ResultEnum.INSUFFICIENT_BALANCE);
         }
         userBalanceDao.subDKBalance(userId, bigAmount);
         BigDecimal dkAmount = bigAmount.multiply(new BigDecimal(80)).divide(new BigDecimal(100));
         BigDecimal dnAmount = bigAmount.subtract(dkAmount);
-        userBalanceDao.addDKBalance(destUserId,dkAmount);
-        userBalanceDao.addDNBalance(destUserId,dnAmount);
+        userBalanceDao.addDKBalance(destUser.getId(),dkAmount);
+        userBalanceDao.addDNBalance(destUser.getId(),dnAmount);
 
         //保存一条转账记录
         TransferLog transferLog=new TransferLog();
         transferLog.setAmount(bigAmount);
         transferLog.setFromUserId(userId);
-        transferLog.setToUserId(destUserId);
+        transferLog.setToUserId(destUser.getId());
         transferLogDao.save(transferLog);
     }
 
@@ -57,8 +59,8 @@ public class TransferService {
     public void exchange(String amount){
         Integer userId=UserUtil.get();
         BigDecimal bigAmount = new BigDecimal(amount);
-        BigDecimal balance=userBalanceDao.findBanalceByUserIdAndCoinType(userId,0);
-        if(balance.compareTo(bigAmount)<0){
+        UserBalance balance=userBalanceDao.findByUserIdAndCoinType(userId,0);
+        if(balance.getBalance().compareTo(bigAmount)<0){
             throw new BizException(ResultEnum.INSUFFICIENT_BALANCE);
         }
         BigDecimal dnAmount = bigAmount.multiply(new BigDecimal(6));

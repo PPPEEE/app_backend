@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,11 +23,16 @@ public class User implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(hidden = true)
     private Integer id;
+    @Column(length = 32)
     private String userName; //用户名
+    @Column(length = 32)
     private String pwd; //密码
+    @Column(length = 32)
     private String telephone; //联系电话
+    @Column(length = 32)
     private String refereeId; //推荐人ID
     @ApiModelProperty(hidden = true)
+    @Column(length = 64)
     private String address;
 
     /**
