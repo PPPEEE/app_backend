@@ -6,20 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pe.exchange.common.Result;
 import com.pe.exchange.common.Results;
 import com.pe.exchange.config.SmsConfig;
-import com.pe.exchange.entity.User;
 import com.pe.exchange.entity.UserInfo;
 import com.pe.exchange.entity.UserParamCode;
 import com.pe.exchange.entity.UserPayInfo;
 import com.pe.exchange.service.UserPayInfoService;
 import com.pe.exchange.service.UserPayPwdService;
 import com.pe.exchange.service.UserService;
-import com.pe.exchange.utils.JsonUtils;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;

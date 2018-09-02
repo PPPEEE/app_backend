@@ -67,7 +67,8 @@ public class UserService {
     public void getVeriCode(String areaCode, String mobile, int type) {
     	
         // 获取验证码
-        String code = VeriCodeUtils.random(6);
+        //String code = VeriCodeUtils.random(6);
+    	String code = "000000";
         System.out.println(code);
         try {
             // 保存验证码到redis,有效期60s
@@ -128,8 +129,7 @@ public class UserService {
     }
     
     public User findUserBy() {
-    	int userId = UserUtil.get();
-    	User u = userDao.findById(userId).get();
+    	User u = UserUtil.get();
     	u.setPwd("");
     	return u;
     }
