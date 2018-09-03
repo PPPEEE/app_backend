@@ -10,7 +10,9 @@
         <fileSet>
             <directory>${project.basedir}/target/classes</directory>
             <includes>
-                <include>*.yml</include>
+                <include>application.yml</include>
+                <include>application-${profileActive}.yml</include>
+                <include>*.xml</include>
             </includes>
             <outputDirectory>/config</outputDirectory>
         </fileSet>
