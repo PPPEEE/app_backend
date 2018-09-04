@@ -1,27 +1,17 @@
 package com.pe.exchange.service;
 
-<<<<<<< HEAD
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-=======
 import com.alibaba.fastjson.JSON;
->>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
 import com.alibaba.fastjson.JSONObject;
 import com.pe.exchange.common.ResultEnum;
 import com.pe.exchange.config.SmsConfig;
 import com.pe.exchange.dao.UserBalanceDao;
 import com.pe.exchange.dao.UserDao;
 import com.pe.exchange.dao.UserInfoDao;
+import com.pe.exchange.dao.VersionInfoDao;
 import com.pe.exchange.entity.User;
-<<<<<<< HEAD
-=======
 import com.pe.exchange.entity.UserBalance;
->>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
 import com.pe.exchange.entity.UserInfo;
+import com.pe.exchange.entity.VersionInfo;
 import com.pe.exchange.exception.BaseException;
 import com.pe.exchange.exception.BizException;
 import com.pe.exchange.exception.SysException;
@@ -33,15 +23,11 @@ import com.pe.exchange.utils.SmsAppUtils;
 import com.pe.exchange.utils.TokenGeneratorUtil;
 import com.pe.exchange.utils.UserUtil;
 import com.pe.exchange.utils.VeriCodeUtils;
-
 import lombok.extern.slf4j.Slf4j;
-<<<<<<< HEAD
-=======
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
->>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -51,7 +37,6 @@ import java.util.List;
 @Service
 public class UserService {
 
-	private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private static final String VERI_CODE_FLAG = "veri";
     private static final String TOKEN_FLAG = "TOKEN";
     @Autowired
@@ -61,27 +46,15 @@ public class UserService {
 
     @Autowired
     UserDao userDao;
-    
-    @Autowired
-    UserInfoDao userInfoDao;
-    
-    
-    public void updateUserInfo(UserInfo userInfo) {
-    	try {
-    		log.info("开始执行修改用户信息,用户ID："+userInfo.getUserId());
-    		userInfoDao.save(userInfo);
-		} catch (Exception e) {
-			log.error("系统异常:",e);
-			throw new SysException();
-		}
-    }
-    
 
     @Autowired UserBalanceDao userBalanceDao;
     
     @Autowired
     UserInfoDao userInfoDao;
     @Autowired UserInvitTask userInvitTask;
+    
+    @Autowired
+    VersionInfoDao versionInfoDao; 
     
     
     public void updateUserInfo(UserInfo userInfo) {
@@ -95,16 +68,17 @@ public class UserService {
 		}
     }
     
+    public UserInfo findUserInfo() {
+    	User user =  UserUtil.get();
+    	return userInfoDao.findById(user.getId()).get();
+    }
+    
 
     public void getVeriCode(String areaCode, String mobile, int type) {
     	
         // 获取验证码
-<<<<<<< HEAD
-        String code = VeriCodeUtils.random(6);
-=======
         //String code = VeriCodeUtils.random(6);
     	String code = "000000";
->>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
         System.out.println(code);
         try {
             // 保存验证码到redis,有效期60s
@@ -123,10 +97,7 @@ public class UserService {
 
     }
 
-<<<<<<< HEAD
-=======
     @Transactional(rollbackFor = Exception.class)
->>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
     public void register(User user,String code){
         User u= userDao.findByUserName(user.getUserName());
         if(u!=null){
@@ -140,7 +111,6 @@ public class UserService {
         try {
             userDao.save(user);
             user.setAddress(CopyBTCAddressUtil.generateAddress(user.getId()));
-            user.setUserLevel(0);
             userDao.save(user);
             initUserBalance(user);
             if(user.getRefereeId()!=null){
@@ -162,7 +132,7 @@ public class UserService {
     }
     
     public void userNameExists(String userName) {
-    	User u= userDao.findByUserName(userName);
+    	User u= userDao.findWithLogin(userName);
         if(u != null){
         	throw new BizException(ResultEnum.USER_ALREADY_EXISTS);
         }
@@ -198,14 +168,23 @@ public class UserService {
             throw new BizException(ResultEnum.LOGIN_FAIL);
         }
         String token= TokenGeneratorUtil.generateValue();
-<<<<<<< HEAD
-        redisOps.setWithTimeout(token,user.getId().toString(), 1000 * 60 * 30);
-=======
         user.setPwd("");
-
-        redisOps.setWithTimeout(token, JSON.toJSONString(user), 1000 * 60 * 30);
->>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
+        long times = getCalculationFormulaBizLong("1000 * 60 * 60 * 24 * 30");
+        redisOps.setWithTimeout(token, JSON.toJSONString(user), times);
         return token;
+    }
+    
+    private static Long getCalculationFormulaBizLong(String formula) {
+    	BigDecimal big = new BigDecimal(1);
+    	if(formula.indexOf("*")>-1) {
+    		String[] str = formula.split("\\*");
+    		for (String s : str) {
+    			big = big.multiply(new BigDecimal(s.trim()));
+			}
+    	}else {
+    		return Long.valueOf(formula);
+    	}
+    	return big.longValue();
     }
 
     public boolean checkVeriCode(String mobile, String code) {
@@ -261,5 +240,20 @@ public class UserService {
         String params = map.toString();
 
         SmsAppUtils.send(url, params);
+    }
+    
+    
+    public VersionInfo getNewVersionInfo() {
+    	return versionInfoDao.findById(1).get();
+    }
+    
+    
+    public List<User> findMyTeam(){
+    	Integer id = UserUtil.get().getId();
+    	List<User> users = userDao.findMyTeam(id);
+    	for (User user : users) {
+			user.setPwd("");
+		}
+    	return users;
     }
 }

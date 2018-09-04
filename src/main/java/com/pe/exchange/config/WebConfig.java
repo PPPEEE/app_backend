@@ -25,6 +25,7 @@ public class WebConfig implements WebMvcConfigurer {
         exclude.add("/user/login");
         exclude.add("/user/register");
         exclude.add("/user/sendCode");
+        exclude.add("/user/userNameExists");
 
 
         //swagger相关

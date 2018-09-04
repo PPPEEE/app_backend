@@ -1,21 +1,14 @@
 
 #服务端口
 server:
-  port: 8080
+  port: 8081
 
 spring:
   datasource:
-<<<<<<< HEAD
-    driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/pe_app
-    username: root
-    password: ROOT
-=======
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://120.132.120.253:3306/pe?autoReconnect=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&allowMultiQueries=true&useSSL=false
-    username: pe
-    password: Pe123456!
->>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
+    url: jdbc:mysql://120.78.205.55:3306/pe?autoReconnect=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&allowMultiQueries=true&useSSL=false
+    username: root
+    password: shenjia888
 
   jpa:
     database: mysql

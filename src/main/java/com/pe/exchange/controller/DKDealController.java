@@ -1,15 +1,10 @@
 package com.pe.exchange.controller;
 
-<<<<<<< HEAD
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-=======
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
->>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,10 +13,7 @@ import com.pe.exchange.common.Result;
 import com.pe.exchange.common.Results;
 import com.pe.exchange.entity.DKDealInfo;
 import com.pe.exchange.service.DKDealService;
-<<<<<<< HEAD
-=======
 import com.pe.exchange.utils.OderQueueUtil;
->>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
 
 import io.swagger.annotations.Api;
 
@@ -41,24 +33,6 @@ public class DKDealController {
 	private DKDealService dkDealService;
 	
 	
-<<<<<<< HEAD
-	@PostMapping("findTotal")
-	public Result findDKTotalNumber(@RequestParam("token") String token) {
-		return Results.success(dkDealService.getUserDKNumber(token));
-	}
-	
-	@PostMapping("releaseDK")
-	public Result releaseDk(DKDealInfo dealInfo,@RequestParam("token") String token) {
-		dkDealService.saveDKDeal(dealInfo, token);
-		return Results.success();
-	}
-	
-	@PostMapping("dkByType")
-	public Result findDKDeailByType(@RequestParam("type") int type) {
-		return Results.success(dkDealService.findDKDeailList(type));
-	}
-	
-=======
 	/***
 	 * 账户DK总资产
 	 * @return
@@ -161,5 +135,4 @@ public class DKDealController {
 		dkDealService.oderAppeal(Integer.valueOf(param.get("id")), param.get("fileName"), param.get("desc"));
 		return Results.success();
 	}
->>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
 }

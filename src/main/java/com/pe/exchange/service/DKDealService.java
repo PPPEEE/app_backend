@@ -1,42 +1,26 @@
 package com.pe.exchange.service;
 
-<<<<<<< HEAD
-import java.util.List;
-import java.util.Optional;
-
-import org.codehaus.plexus.util.StringUtils;
-=======
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
->>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-<<<<<<< HEAD
-import com.pe.exchange.common.ResultEnum;
-import com.pe.exchange.dao.DKDealDao;
-import com.pe.exchange.dao.UserDao;
-=======
 import com.pe.exchange.dao.DKDealAppealDao;
 import com.pe.exchange.dao.DKDealDao;
 import com.pe.exchange.dao.UserDao;
 import com.pe.exchange.entity.Appeal;
->>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
 import com.pe.exchange.entity.DKDealInfo;
 import com.pe.exchange.entity.User;
 import com.pe.exchange.exception.BizException;
 import com.pe.exchange.exception.SysException;
 import com.pe.exchange.redis.RedisOps;
-<<<<<<< HEAD
-=======
 import com.pe.exchange.utils.OderQueueUtil;
 import com.pe.exchange.utils.UserUtil;
->>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
 import com.pe.exchange.utils.VeriCodeUtils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -45,11 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class DKDealService {
 	
-<<<<<<< HEAD
-	private static final Logger log = LoggerFactory.getLogger(DKDealService.class);
-	
-=======
->>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
 	@Autowired
 	private DKDealDao dkDealDao;
 	
@@ -58,8 +37,6 @@ public class DKDealService {
 	 
 	 @Autowired
 	 UserDao userDao;
-<<<<<<< HEAD
-=======
 	 
 	 @Autowired
 	 UserPayInfoService userPayInfoService;
@@ -68,26 +45,15 @@ public class DKDealService {
 	 DKDealAppealDao dkDealAppealDao; 
 	 
 	 private final String key = "_orderKey";
->>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
 	
 	/***
 	 * 查询用户DK总资产
 	 * @return
 	 */
-<<<<<<< HEAD
-	public Integer getUserDKNumber(String token) {
-	  String userId = redisOps.get(token);
-	  if(!StringUtils.isNotBlank(userId)) {
-		  log.error("用户失效！");
-		  throw new BizException(ResultEnum.USER_FAIL);
-	  }
-	  List<DKDealInfo> dkList = dkDealDao.getDKTotalNumber(userId);
-=======
 	public Integer getUserDKNumber() {
 	  User user = UserUtil.get();
 	 
 	  List<DKDealInfo> dkList = dkDealDao.getDKTotalNumber(user.getId());
->>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
 	  return computeDKTotal(dkList);
 	}
 	
@@ -108,23 +74,6 @@ public class DKDealService {
 		return total;
 	}
 	
-<<<<<<< HEAD
-	public void saveDKDeal(DKDealInfo dealInfo,String token) {
-		String userId = redisOps.get(token);
-		if(!StringUtils.isNotBlank(userId)) {
-			  log.error("用户失效！");
-			  throw new BizException(ResultEnum.USER_FAIL);
-		  }
-		//绑定订单号
-		dealInfo.setOrderNumber(VeriCodeUtils.getOrderIdByUUId());
-		dealInfo.setMoney(dealInfo.getDealNumber() * 0.8);
-		User u = new User();
-		u.setId(Integer.valueOf(userId));
-		dealInfo.setUser(u);
-		int total = 0;
-		if(2 == dealInfo.getType()) {
-			total = getUserDKNumber(token);
-=======
 	public void saveDKDeal(DKDealInfo dealInfo) {
 		User user = UserUtil.get();
 		//绑定订单号
@@ -134,7 +83,6 @@ public class DKDealService {
 		int total = 0;
 		if(2 == dealInfo.getType()) {
 			total = getUserDKNumber();
->>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
 			if(total<1) {
 				throw new SysException();
 			}
@@ -147,10 +95,6 @@ public class DKDealService {
 	 * @return
 	 */
 	public List<DKDealInfo> findDKDeailList(int type){
-<<<<<<< HEAD
-		return dkDealDao.findTypeDKList(type);
-	}
-=======
 		List<DKDealInfo> list =  null;
 		if(type == 0) {
 			list = dkDealDao.findUserDKList(UserUtil.get().getId());
@@ -270,5 +214,4 @@ public class DKDealService {
 		}
 	}
 	
->>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
 }
