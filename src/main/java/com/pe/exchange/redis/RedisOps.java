@@ -19,11 +19,11 @@ public class RedisOps {
      *
      * @param key
      * @param value
-     * @param time 单位默认为毫秒
+     * @param time 单位默认为秒
      */
     public void setWithTimeout(String key ,String value,long time){
 
-        stringRedisTemplate.opsForValue().set(key,value,time, TimeUnit.MILLISECONDS);
+        stringRedisTemplate.opsForValue().set(key,value,time, TimeUnit.SECONDS);
     }
     public String get(String key){
 

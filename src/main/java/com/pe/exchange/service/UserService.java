@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.pe.exchange.common.ResultEnum;
 import com.pe.exchange.config.SmsConfig;
+import com.pe.exchange.config.SwaggerConfig;
 import com.pe.exchange.dao.UserBalanceDao;
 import com.pe.exchange.dao.UserDao;
 import com.pe.exchange.dao.UserInfoDao;
@@ -25,6 +26,7 @@ import com.pe.exchange.utils.UserUtil;
 import com.pe.exchange.utils.VeriCodeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -36,6 +38,9 @@ import java.util.List;
 @Slf4j
 @Service
 public class UserService {
+
+    @Value("${spring.profiles.active}")
+    String env;
 
     private static final String VERI_CODE_FLAG = "veri";
     private static final String TOKEN_FLAG = "TOKEN";
@@ -77,13 +82,19 @@ public class UserService {
     public void getVeriCode(String areaCode, String mobile, int type) {
     	
         // 获取验证码
-        //String code = VeriCodeUtils.random(6);
-    	String code = "000000";
+        long timeout=60L;
+
+        String code = VeriCodeUtils.random(6);
+
+        if(!env.equals(SwaggerConfig.PROFILE_PROD)) {
+            code = "000000";
+            timeout=timeout*10;
+        }
         System.out.println(code);
         try {
             // 保存验证码到redis,有效期60s
             String key = mobile + VERI_CODE_FLAG;
-            redisOps.setWithTimeout(key, code, 60000 * 10);
+            redisOps.setWithTimeout(key, code, timeout);
             // 发送验证码
             sendVeriCode(areaCode, mobile, type, code);
         }catch (BaseException e){
@@ -103,14 +114,15 @@ public class UserService {
         if(u!=null){
             throw new BizException(ResultEnum.USER_ALREADY_EXISTS);
         }
-        if(!checkVeriCode(user.getTelephone(),code)) {
-        	throw new BizException(ResultEnum.CODE_ERROR);
-        }
+//        if(!checkVeriCode(user.getTelephone(),code)) {
+//        	throw new BizException(ResultEnum.CODE_ERROR);
+//        }
       
         user.setPwd(encryptPwd(user.getPwd()));
         try {
             userDao.save(user);
             user.setAddress(CopyBTCAddressUtil.generateAddress(user.getId()));
+            user.setUserLevel(0);
             userDao.save(user);
             initUserBalance(user);
             if(user.getRefereeId()!=null){
@@ -169,23 +181,11 @@ public class UserService {
         }
         String token= TokenGeneratorUtil.generateValue();
         user.setPwd("");
-        long times = getCalculationFormulaBizLong("1000 * 60 * 60 * 24 * 30");
-        redisOps.setWithTimeout(token, JSON.toJSONString(user), times);
+
+        redisOps.setWithTimeout(token, JSON.toJSONString(user),  60 * 60 * 24 * 30L);
         return token;
     }
     
-    private static Long getCalculationFormulaBizLong(String formula) {
-    	BigDecimal big = new BigDecimal(1);
-    	if(formula.indexOf("*")>-1) {
-    		String[] str = formula.split("\\*");
-    		for (String s : str) {
-    			big = big.multiply(new BigDecimal(s.trim()));
-			}
-    	}else {
-    		return Long.valueOf(formula);
-    	}
-    	return big.longValue();
-    }
 
     public boolean checkVeriCode(String mobile, String code) {
         // 保存验证码到redis,有效期60s

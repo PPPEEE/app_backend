@@ -3,10 +3,13 @@
 server:
   port: 8081
 
+logging:
+  config: config/logback-spring.xml
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/pe_app?autoReconnect=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&allowMultiQueries=true&useSSL=false
+    url: jdbc:mysql://127.0.0.1:3306/pe_app?autoReconnect=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&allowMultiQueries=true&useSSL=false
     username: root
     password: ROOT
 
@@ -43,7 +46,6 @@ sms:
     username: 11
     password: 11
     sign: 11
-
 
 
 

@@ -23,6 +23,7 @@ import java.util.List;
 @EnableSwagger2
 public class SwaggerConfig implements WebMvcConfigurer {
 
+    public static final String PROFILE_PROD="prod";
     @Value("${spring.profiles.active}")
     String env;
 
@@ -51,7 +52,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
         List<Parameter> parameterBuilders =new ArrayList<>();
         parameterBuilders.add(ticketPar.build());
 
-        return new Docket(DocumentationType.SWAGGER_2).enable(!env.equals("prod"))
+        return new Docket(DocumentationType.SWAGGER_2).enable(!env.equals(PROFILE_PROD))
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.pe.exchange.controller"))

@@ -144,10 +144,10 @@ public class DKDealService {
 			dkDealDao.save(dkDealInfo);
 			String redisKey = getOderRedisKey(id,1)+"_"+status;
 			String _redisKey = getOderRedisKey(dkDealInfo.getId(),1)+"_4";
-			redisOps.setWithTimeout(redisKey, "", 1000 * 60 * dkInfo.getTimes());
-			redisOps.setWithTimeout(_redisKey, "", 1000 * 60 * dkInfo.getTimes());
-			OderQueueUtil.setOderQueue(redisKey, 0l);
-			OderQueueUtil.setOderQueue(_redisKey, 0l);
+			redisOps.setWithTimeout(redisKey, "", 60 * dkInfo.getTimes());
+			redisOps.setWithTimeout(_redisKey, "",  60 * dkInfo.getTimes());
+			OderQueueUtil.setOderQueue(redisKey, 0L);
+			OderQueueUtil.setOderQueue(_redisKey, 0L);
 		} catch (Exception e) {
 		}
 	}
@@ -189,10 +189,10 @@ public class DKDealService {
 		
 		String redisKey = getOderRedisKey(id,2);
 		String _redisKey = getOderRedisKey(dealInfo.getId(),2);
-		redisOps.setWithTimeout(redisKey, "", 1000 * 60 );
-		redisOps.setWithTimeout(_redisKey, "", 1000 * 60);
-		OderQueueUtil.setOderQueue(redisKey, 0l);
-		OderQueueUtil.setOderQueue(_redisKey, 0l);
+		redisOps.setWithTimeout(redisKey, "",  60 );
+		redisOps.setWithTimeout(_redisKey, "",  60);
+		OderQueueUtil.setOderQueue(redisKey, 0L);
+		OderQueueUtil.setOderQueue(_redisKey, 0L);
 	}
 	
 	public String getOderRedisKey(Integer id,Integer type) {
