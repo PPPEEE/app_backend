@@ -101,6 +101,7 @@ public class UserService {
         try {
             userDao.save(user);
             user.setAddress(CopyBTCAddressUtil.generateAddress(user.getId()));
+            user.setUserLevel(0);
             userDao.save(user);
             initUserBalance(user);
             if(user.getRefereeId()!=null){
