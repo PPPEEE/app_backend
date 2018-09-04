@@ -3,12 +3,21 @@ package com.pe.exchange.entity;
 import java.io.Serializable;
 
 import javax.persistence.Entity;
+<<<<<<< HEAD
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+=======
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.ColumnDefault;
+>>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
 
 import lombok.Data;
 
@@ -32,6 +41,7 @@ public class DKDealInfo implements Serializable{
 	//交易类型
 	private Integer type;
 	
+<<<<<<< HEAD
 	//订单状态 1:已完成 2：未完成 3:已失效
 	private Integer status;
 	
@@ -98,5 +108,22 @@ public class DKDealInfo implements Serializable{
 	
 	
 	
+=======
+	//订单状态 1:已完成 2：未完成 3:等待付款 4:超时 5冻结 6已付款待确认 7申诉
+	private Integer status;
+	
+	//最小限额
+	@ColumnDefault(value = "0")
+	private Integer minNumber;
+	
+	//付款时间 (分钟)
+	private Integer times;
+	
+	private Integer user_id;
+	
+	//发布者信息
+	@Transient
+	private User user;
+>>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
 	
 }

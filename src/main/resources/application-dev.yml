@@ -5,15 +5,24 @@ server:
 
 spring:
   datasource:
+<<<<<<< HEAD
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/pe_app
     username: root
     password: ROOT
+=======
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://120.132.120.253:3306/pe?autoReconnect=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&allowMultiQueries=true&useSSL=false
+    username: pe
+    password: Pe123456!
+>>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
 
   jpa:
     database: mysql
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     show-sql: true
     generate-ddl: true
+
   redis:
     #数据库索引
     database: 0
@@ -41,4 +50,7 @@ sms:
     username: 11
     password: 11
     sign: 11
+
+
+
 

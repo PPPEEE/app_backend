@@ -1,28 +1,51 @@
 package com.pe.exchange.service;
 
+<<<<<<< HEAD
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+=======
+import com.alibaba.fastjson.JSON;
+>>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
 import com.alibaba.fastjson.JSONObject;
 import com.pe.exchange.common.ResultEnum;
 import com.pe.exchange.config.SmsConfig;
+import com.pe.exchange.dao.UserBalanceDao;
 import com.pe.exchange.dao.UserDao;
 import com.pe.exchange.dao.UserInfoDao;
 import com.pe.exchange.entity.User;
+<<<<<<< HEAD
+=======
+import com.pe.exchange.entity.UserBalance;
+>>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
 import com.pe.exchange.entity.UserInfo;
 import com.pe.exchange.exception.BaseException;
 import com.pe.exchange.exception.BizException;
 import com.pe.exchange.exception.SysException;
 import com.pe.exchange.redis.RedisOps;
+import com.pe.exchange.task.UserInvitTask;
+import com.pe.exchange.utils.CopyBTCAddressUtil;
 import com.pe.exchange.utils.SHA256Util;
 import com.pe.exchange.utils.SmsAppUtils;
 import com.pe.exchange.utils.TokenGeneratorUtil;
+import com.pe.exchange.utils.UserUtil;
 import com.pe.exchange.utils.VeriCodeUtils;
 
 import lombok.extern.slf4j.Slf4j;
+<<<<<<< HEAD
+=======
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+>>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -54,15 +77,39 @@ public class UserService {
     }
     
 
+    @Autowired UserBalanceDao userBalanceDao;
+    
+    @Autowired
+    UserInfoDao userInfoDao;
+    @Autowired UserInvitTask userInvitTask;
+    
+    
+    public void updateUserInfo(UserInfo userInfo) {
+    	try {
+    		userInfo.setUserId(UserUtil.get().getId());
+    		log.info("开始执行修改用户信息,用户ID："+userInfo.getUserId());
+    		userInfoDao.save(userInfo);
+		} catch (Exception e) {
+			log.error("系统异常:",e);
+			throw new SysException();
+		}
+    }
+    
+
     public void getVeriCode(String areaCode, String mobile, int type) {
     	
         // 获取验证码
+<<<<<<< HEAD
         String code = VeriCodeUtils.random(6);
+=======
+        //String code = VeriCodeUtils.random(6);
+    	String code = "000000";
+>>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
         System.out.println(code);
         try {
             // 保存验证码到redis,有效期60s
             String key = mobile + VERI_CODE_FLAG;
-            redisOps.setWithTimeout(key, code, 60000);
+            redisOps.setWithTimeout(key, code, 60000 * 10);
             // 发送验证码
             sendVeriCode(areaCode, mobile, type, code);
         }catch (BaseException e){
@@ -76,6 +123,10 @@ public class UserService {
 
     }
 
+<<<<<<< HEAD
+=======
+    @Transactional(rollbackFor = Exception.class)
+>>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
     public void register(User user,String code){
         User u= userDao.findByUserName(user.getUserName());
         if(u!=null){
@@ -88,11 +139,57 @@ public class UserService {
         user.setPwd(encryptPwd(user.getPwd()));
         try {
             userDao.save(user);
+            user.setAddress(CopyBTCAddressUtil.generateAddress(user.getId()));
+            user.setUserLevel(0);
+            userDao.save(user);
+            initUserBalance(user);
+            if(user.getRefereeId()!=null){
+                userInvitTask.userInvit(user.getRefereeId(),user.getId());
+            }
+
         } catch (Exception e) {
             log.error("数据插入失败",e);
             throw new SysException();
         }
     }
+
+    private void initUserBalance(User user){
+        List<UserBalance> list=new ArrayList<>();
+
+        list.add(new UserBalance(user.getId(),0,"",new BigDecimal(0),new BigDecimal(0)));
+        list.add(new UserBalance(user.getId(),1,"",new BigDecimal(0),new BigDecimal(0)));
+        userBalanceDao.saveAll(list);
+    }
+    
+    public void userNameExists(String userName) {
+    	User u= userDao.findByUserName(userName);
+        if(u != null){
+        	throw new BizException(ResultEnum.USER_ALREADY_EXISTS);
+        }
+    }
+    
+    public User findUserBy() {
+    	User u = UserUtil.get();
+    	u.setPwd("");
+    	return u;
+    }
+    
+    public void updateUserInfo(String userName,String telephone,String code,String pwd) {
+    	User u= userDao.findByUserName(userName);
+        if(u==null){
+            throw new BizException(ResultEnum.USER_NOT_EXISTS);
+        }
+        if(!u.getTelephone().equals(telephone)) {
+        	throw new BizException(304,"联系方式错误！");
+        }
+        if(!checkVeriCode(u.getTelephone(),code) && (code != null || !"".equals(code))) {
+        	throw new BizException(ResultEnum.CODE_ERROR);
+        }
+        u.setPwd(encryptPwd(pwd));
+        userDao.save(u);
+    }
+    
+    
 
     public String login(String username,String password){
         User user=userDao.findWithLogin(username);
@@ -101,7 +198,13 @@ public class UserService {
             throw new BizException(ResultEnum.LOGIN_FAIL);
         }
         String token= TokenGeneratorUtil.generateValue();
+<<<<<<< HEAD
         redisOps.setWithTimeout(token,user.getId().toString(), 1000 * 60 * 30);
+=======
+        user.setPwd("");
+
+        redisOps.setWithTimeout(token, JSON.toJSONString(user), 1000 * 60 * 30);
+>>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
         return token;
     }
 
@@ -109,6 +212,7 @@ public class UserService {
         // 保存验证码到redis,有效期60s
         String key = mobile + VERI_CODE_FLAG;
         String savedCode = redisOps.get(key);
+        redisOps.delete(key);
         return code.equals(savedCode);
     }
 

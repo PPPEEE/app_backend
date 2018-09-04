@@ -21,6 +21,7 @@ public class UserInfo implements Serializable{
     private String addr;
     private String mobile;
     private LocalDateTime lastUpdTime;
+<<<<<<< HEAD
 	public Integer getUserId() {
 		return userId;
 	}
@@ -76,5 +77,7 @@ public class UserInfo implements Serializable{
 		this.lastUpdTime = lastUpdTime;
 	}
     
+=======
+>>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
     
 }

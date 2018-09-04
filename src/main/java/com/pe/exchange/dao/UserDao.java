@@ -2,6 +2,7 @@ package com.pe.exchange.dao;
 
 import com.pe.exchange.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -16,6 +17,15 @@ public interface UserDao extends JpaRepository<User,Integer> {
 
     @Query(value = "select * from user where user_name=:param or telephone=:param or id=:param",nativeQuery = true)
     User findWithLogin(@Param("param")String param);
+<<<<<<< HEAD
+=======
+
+    User findByAddress(String address);
+
+    @Modifying
+    @Query(value = "update user set user_level=:userLevel where user_id=:userId",nativeQuery = true)
+    int updateUserLevel(@Param("userId") Integer userId,@Param("userLevel") Integer userLevel);
+>>>>>>> c0172847aa2b773c7f165394c9a8e800930a7e84
     
     
    /* @Query(value = "select * from user where id = :id",nativeQuery = true)

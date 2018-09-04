@@ -14,6 +14,10 @@ public class Result<T> {
 
     public Result() {
     }
+    public Result(ResultEnum resultEnum) {
+        this.code=resultEnum.getCode();
+        this.message=resultEnum.getMsg();
+    }
 
     public Result setCode(int resultCode) {
         this.code = resultCode;

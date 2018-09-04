@@ -30,4 +30,16 @@ public class RedisOps {
       return  stringRedisTemplate.opsForValue().get(key);
     }
 
+    public boolean hasKey(String key){
+        return stringRedisTemplate.hasKey(key);
+    }
+
+    public boolean delete(String key){
+        return stringRedisTemplate.delete(key);
+    }
+    
+    
+    public Long getOutTimes(String key) {
+    	return stringRedisTemplate.getExpire(key);
+    }
 }

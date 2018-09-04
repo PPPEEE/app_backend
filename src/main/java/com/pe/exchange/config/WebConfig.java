@@ -24,6 +24,10 @@ public class WebConfig implements WebMvcConfigurer {
         List<String> exclude=new ArrayList<>();
         exclude.add("/user/login");
         exclude.add("/user/register");
+        exclude.add("/user/sendCode");
+
+
+        //swagger相关
         exclude.add("/swagger-ui.html/**");
         exclude.add("/webjars/**");
         exclude.add("/error");
