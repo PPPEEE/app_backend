@@ -32,8 +32,11 @@ public class DKDealInfo implements Serializable{
 	//交易类型
 	private Integer type;
 	
-	//订单状态 1:已完成 2：未完成 3:等待付款 4:超时 5冻结 6已付款待确认 7申诉
+	//订单状态  0:取消 1:已完成 2：未完成 3:等待付款 4:超时 5冻结 6已付款待确认 7申诉
 	private Integer status;
+	
+	//支付方式
+	private String payInfo;
 	
 	//最小限额
 	@ColumnDefault(value = "0")

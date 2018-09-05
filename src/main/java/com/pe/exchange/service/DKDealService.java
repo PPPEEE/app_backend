@@ -1,5 +1,6 @@
 package com.pe.exchange.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,10 +13,12 @@ import org.springframework.stereotype.Service;
 
 import com.pe.exchange.dao.DKDealAppealDao;
 import com.pe.exchange.dao.DKDealDao;
+import com.pe.exchange.dao.UserBalanceDao;
 import com.pe.exchange.dao.UserDao;
 import com.pe.exchange.entity.Appeal;
 import com.pe.exchange.entity.DKDealInfo;
 import com.pe.exchange.entity.User;
+import com.pe.exchange.entity.UserPayInfo;
 import com.pe.exchange.exception.BizException;
 import com.pe.exchange.exception.SysException;
 import com.pe.exchange.redis.RedisOps;
@@ -44,7 +47,12 @@ public class DKDealService {
 	 @Autowired
 	 DKDealAppealDao dkDealAppealDao; 
 	 
+	 @Autowired
+	 UserBalanceDao userBalanceDao;
+	 
 	 private final String key = "_orderKey";
+	 
+	 
 	
 	/***
 	 * 查询用户DK总资产
@@ -74,12 +82,17 @@ public class DKDealService {
 		return total;
 	}
 	
+	/**
+	 * 发布订单
+	 * @param dealInfo
+	 */
 	public void saveDKDeal(DKDealInfo dealInfo) {
 		User user = UserUtil.get();
 		//绑定订单号
 		dealInfo.setOrderNumber(VeriCodeUtils.getOrderIdByUUId());
 		dealInfo.setMoney(dealInfo.getDealNumber() * 0.8);
 		dealInfo.setUser_id(user.getId());
+		dealInfo.setStatus(2);
 		int total = 0;
 		if(2 == dealInfo.getType()) {
 			total = getUserDKNumber();
@@ -88,6 +101,20 @@ public class DKDealService {
 			}
 		}
 		dkDealDao.save(dealInfo);
+		userBalanceDao.subDKBalance(user.getId(), new BigDecimal(dealInfo.getDealNumber()));
+	}
+	
+	/**
+	 * 取消订单
+	 */
+	public void cleanDKDeal(Integer id) {
+		
+		DKDealInfo dk = dkDealDao.findById(id).get();
+		if(dk.getStatus() == 2) {
+			dk.setStatus(0);
+		}
+		dkDealDao.save(dk);
+		userBalanceDao.addDKBalance(dk.getUser_id(), new BigDecimal(dk.getDealNumber()));
 	}
 	
 	/***
@@ -109,10 +136,28 @@ public class DKDealService {
 		User u = null;
 		for (DKDealInfo dk : list) {
 			u = userDao.findById(dk.getUser_id()).get();
-			u.setUserPayInfo(userPayInfoService.findUserPayInfoList(dk.getUser_id()));
+			List<UserPayInfo> uPList =userPayInfoService.findUserPayInfoList(dk.getUser_id());
+			u.setUserPayInfo(getPayListByType(uPList,dk.getPayInfo()));
 			u.setPwd("");
 			dk.setUser(u);
 		}
+	}
+	
+	private List<UserPayInfo> getPayListByType(List<UserPayInfo> list ,String type){
+		List<UserPayInfo> _list = new ArrayList<UserPayInfo>();
+		if(type != null && !"".equals(type)) {
+			String[]  ts = type.split(",");
+			for (int i = 0; i < ts.length; i++) {
+				for (UserPayInfo userPayInfo : list) {
+					if((userPayInfo.getPayType()+"").equals(ts[i].trim().toString())) {
+						_list.add(userPayInfo);
+					}
+				}
+			}
+			return _list;
+		}
+		return list;
+		
 	}
 	
 	public DKDealInfo findDkById(Integer id) {
@@ -144,13 +189,18 @@ public class DKDealService {
 			dkDealDao.save(dkDealInfo);
 			String redisKey = getOderRedisKey(id,1)+"_"+status;
 			String _redisKey = getOderRedisKey(dkDealInfo.getId(),1)+"_4";
-			redisOps.setWithTimeout(redisKey, "", 60 * dkInfo.getTimes());
-			redisOps.setWithTimeout(_redisKey, "",  60 * dkInfo.getTimes());
+			redisOps.setWithTimeout(redisKey, "", 1000 * 60 * dkInfo.getTimes());
+			redisOps.setWithTimeout(_redisKey, "", 1000 * 60 * dkInfo.getTimes());
 			OderQueueUtil.setOderQueue(redisKey, 0L);
 			OderQueueUtil.setOderQueue(_redisKey, 0L);
+			
+			
+			//userBalanceDao.subDKBalance(UserUtil.get().getId(), new BigDecimal(dkInfo.getDealNumber()));
 		} catch (Exception e) {
 		}
 	}
+	
+	
 	
 	
 	public void commitDK(Integer id) {
@@ -167,6 +217,7 @@ public class DKDealService {
 		entitys.add(dealInfo);
 		dkDealDao.saveAll(entitys);
 		
+		userBalanceDao.addDKBalance(dealInfo.getUser_id(), new BigDecimal(dealInfo.getDealNumber()));
 	/*	String redisKey = getOderRedisKey(id)+"_7";
 		String _redisKey = getOderRedisKey(dealInfo.getId())+"_7";
 		if(OderQueueUtil.getQueues().containsKey(arg0)) {
@@ -189,8 +240,8 @@ public class DKDealService {
 		
 		String redisKey = getOderRedisKey(id,2);
 		String _redisKey = getOderRedisKey(dealInfo.getId(),2);
-		redisOps.setWithTimeout(redisKey, "",  60 );
-		redisOps.setWithTimeout(_redisKey, "",  60);
+		redisOps.setWithTimeout(redisKey, "",  1000 * 60 * 60 * 30L);
+		redisOps.setWithTimeout(_redisKey, "",  1000 * 60 * 60 * 30L);
 		OderQueueUtil.setOderQueue(redisKey, 0L);
 		OderQueueUtil.setOderQueue(_redisKey, 0L);
 	}

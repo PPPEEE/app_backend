@@ -1,9 +1,8 @@
 package com.pe.exchange.service;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +31,13 @@ public class UserPayInfoService {
 	}
 	
 	public void saveUserPayInfo(UserPayInfo payInfo) {
+		/*Optional<UserPayInfo> u = userPayInfoDao.findById(payInfo.getId());
+		if(u.isPresent()) {
+			userPayInfoDao.updatePayInfo(payInfo.getAccountId(), payInfo.getAccountName(), payInfo.getBank(), payInfo.getBankBranch(), payInfo.getPayType(), payInfo.getQrCode(), payInfo.getId(), payInfo.getUserId());
+		}else {
+			userPayInfoDao.save(payInfo);
+		}*/
+		payInfo.setUserId(UserUtil.get().getId());
 		userPayInfoDao.save(payInfo);
 	}
 	

@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -75,7 +76,11 @@ public class UserService {
     
     public UserInfo findUserInfo() {
     	User user =  UserUtil.get();
-    	return userInfoDao.findById(user.getId()).get();
+    	Optional<UserInfo> uInfo = userInfoDao.findById(user.getId());
+    	if(uInfo.isPresent()) {
+    		return uInfo.get();
+    	}
+    	return null;
     }
     
 
@@ -108,6 +113,17 @@ public class UserService {
 
     }
 
+    
+    public void updateUserPwd(String pwd,String newPwd) {
+    	User u = UserUtil.get();
+    	if(u.getPwd().equals(pwd)) {
+    		u.setPwd(encryptPwd(newPwd));
+    		userDao.save(u);
+    	}else {
+    		throw new BizException(ResultEnum.LOGIN_FAIL);
+    	}
+    }
+    
     @Transactional(rollbackFor = Exception.class)
     public void register(User user,String code){
         User u= userDao.findByUserName(user.getUserName());
@@ -121,6 +137,10 @@ public class UserService {
         user.setPwd(encryptPwd(user.getPwd()));
         try {
             userDao.save(user);
+            UserInfo uInfo = new UserInfo();
+            uInfo.setUserId(user.getId());
+            uInfo.setMobile(user.getTelephone());
+            updateUserInfo(uInfo);
             user.setAddress(CopyBTCAddressUtil.generateAddress(user.getId()));
             user.setUserLevel(0);
             userDao.save(user);
@@ -156,7 +176,7 @@ public class UserService {
     	return u;
     }
     
-    public void updateUserInfo(String userName,String telephone,String code,String pwd) {
+    public void getUserPwd(String userName,String telephone,String code,String pwd) {
     	User u= userDao.findByUserName(userName);
         if(u==null){
             throw new BizException(ResultEnum.USER_NOT_EXISTS);

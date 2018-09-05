@@ -5,10 +5,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,9 +23,13 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.pe.exchange.common.Result;
 import com.pe.exchange.common.Results;
 
+
+
 @RestController
 @RequestMapping("file")
 public class FileControllerUtils {
+	
+	Logger log = LoggerFactory.getLogger(FileControllerUtils.class);
 	
 	 /**
      * 单文件上传
@@ -33,19 +40,31 @@ public class FileControllerUtils {
      */
     @PostMapping("/upload")
     @ResponseBody
-    public Result upload(@RequestParam("file") MultipartFile file,@RequestParam("type")String type, HttpServletRequest request) {
+    public Result upload(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
         if (!file.isEmpty()) {
-            String saveFileName = type+"_"+file.getOriginalFilename();
-            File saveFile = new File(request.getSession().getServletContext().getRealPath("/upload/") + saveFileName);
-            if (!saveFile.getParentFile().exists()) {
-                saveFile.getParentFile().mkdirs();
-            }
+        	log.info("开始文件上传！");
+        	file.getName();
+            String saveFileName = VeriCodeUtils.getOrderIdByUUId()+"_"+System.currentTimeMillis()+file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."), file.getOriginalFilename().length());
+            File saveFile_ = new File(request.getSession().getServletContext().getRealPath("/upload/") + saveFileName);
+            File saveFile = new File("/opt/app_end/upload/" + saveFileName);
+            List<File> listFiles = new ArrayList<File>();
+            listFiles.add(saveFile_);
+            listFiles.add(saveFile);
+            
             try {
-                BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(saveFile));
-                out.write(file.getBytes());
-                out.flush();
-                out.close();
-                return Results.success(saveFile.getName());
+	            for (File f : listFiles) {
+	            	 if (!f.getParentFile().exists()) {
+	                     f.getParentFile().mkdirs();
+	                     log.info("创建文件保存目录:"+f.getParentFile().getPath());
+	                 }
+	            	 BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(f));
+	                 out.write(file.getBytes());
+	                 out.flush();
+	                 out.close();
+	                 log.info("文件上传成功！");
+				}
+               
+                return Results.success(saveFile_.getName());
             } catch (FileNotFoundException e) {
                // e.printStackTrace();
                 return Results.fail("上传失败," + e.getMessage());
