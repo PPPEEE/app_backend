@@ -1,5 +1,8 @@
 package com.pe.exchange.config;
 
+import com.pe.exchange.dao.UserDao;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,11 +19,13 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
 @EnableSwagger2
+
 public class SwaggerConfig implements WebMvcConfigurer {
 
     public static final String PROFILE_PROD="prod";
@@ -28,21 +33,8 @@ public class SwaggerConfig implements WebMvcConfigurer {
     String env;
 
 
-   /* @Autowired UserDao userDao;
-    @PostConstruct
-    private void init(){
-        if(!env.equals("prod")){
-            Integer userId1=99999;
-            Integer userId2=88888;
-            if(userDao.findById(userId1).orElse(null)==null){
-                User user=new User();
-                user.setId(userId1);
-                user.setAddress("addr99999");
-                user.setTelephone("13999999");
-                userDao.save(user);
-            }
-        }
-    }*/
+    @Autowired UserDao userDao;
+
     @Bean
     public Docket createRestApi() {
         ParameterBuilder ticketPar = new ParameterBuilder();

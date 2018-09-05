@@ -43,12 +43,13 @@ public class User implements Serializable{
      */
     @ColumnDefault("0")
     @Column(insertable = false)
+    @ApiModelProperty(hidden = true)
     private  Integer userLevel;
     
-    //1：会员 2：普通用户
-    private String type;
+
     
     @Transient
+    @ApiModelProperty(hidden = true)
     private List<UserPayInfo> userPayInfo;
     
 }

@@ -54,8 +54,6 @@ public class UserController {
      */
     @PostMapping("login")
     @ApiOperation("登录")
-    @ApiImplicitParams({@ApiImplicitParam(name = "mobile",value = "用户名/手机号/UID",dataType = "String", paramType = "query", required = true),
-        @ApiImplicitParam(name = "password",value = "密码",dataType = "String",  paramType = "query", required = true)})
     public Result doLogin(@RequestBody Map<String,String> params) {
             String login = userService.login(params.get("mobile"),params.get("password"));
             return Results.success(login);
@@ -70,7 +68,6 @@ public class UserController {
     @SuppressWarnings("rawtypes")
 	@PostMapping("register")
     @ApiOperation("注册")
-    @ApiImplicitParams({@ApiImplicitParam(name = "code",value = "验证码",dataType = "String", paramType = "query", required = true) })
     public Result register(@RequestBody UserParamCode params) {
     	userService.register(params.getUser(),params.getCode());
     	return Results.success();
@@ -85,24 +82,17 @@ public class UserController {
     @SuppressWarnings("rawtypes")
 	@PostMapping("checkCode")
     @ApiOperation("校验验证码")
-    @ApiImplicitParams({@ApiImplicitParam(name = "mobile",value = "手机号码",dataType = "String", paramType = "query" , required = true),
-    	@ApiImplicitParam(name = "code",value = "验证码",dataType = "String", paramType = "query", required = true)})
     public Result checkCode(@RequestBody Map<String,String> params) {
     	return Results.success(userService.checkVeriCode(params.get("mobile"), params.get("code")));
     }
     
     /***
      * 发送验证码
-     * @param areaCode
-     * @param mobile
-     * @param type
+
      * @return
      */
 
     @ApiOperation("验证码")
-    @ApiImplicitParams({@ApiImplicitParam(name = "areaCode",value = "归属地",dataType = "String", paramType = "query", required = true),
-        @ApiImplicitParam(name = "mobile",value = "手机号",dataType = "String", paramType = "query", required = true),
-        @ApiImplicitParam(name = "type",value = "类型",dataType = "int",  paramType = "query", required = true)})
 	@PostMapping("sendCode")
     public Result sendCode(@RequestBody Map<String,String> params) {
     	userService.getVeriCode(params.get("areaCode"), params.get("mobile"), Integer.valueOf(params.get("type")));
