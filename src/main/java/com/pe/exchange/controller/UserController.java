@@ -162,9 +162,16 @@ public class UserController {
      * @param userName
      * @return
      */
-    @PostMapping("updateUser")
+    @PostMapping("getPwdUser")
     public Result updateUserInfo(@RequestBody Map<String,String> params) {
-    	userService.updateUserInfo(params.get("userName"),params.get("telepone"),params.get("code"),params.get("pwd"));
+    	userService.getUserPwd(params.get("userName"),params.get("telepone"),params.get("code"),params.get("pwd"));
+    	return Results.success();
+    }
+    
+    
+    @PostMapping("setNewPwd")
+    public Result setNewPwd(@RequestBody Map<String,String> params) {
+    	userService.updateUserPwd(params.get("pwd"), params.get("newPwd"));
     	return Results.success();
     }
     
