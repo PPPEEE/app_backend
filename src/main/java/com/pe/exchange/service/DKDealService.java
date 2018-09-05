@@ -189,8 +189,8 @@ public class DKDealService {
 			dkDealDao.save(dkDealInfo);
 			String redisKey = getOderRedisKey(id,1)+"_"+status;
 			String _redisKey = getOderRedisKey(dkDealInfo.getId(),1)+"_4";
-			redisOps.setWithTimeout(redisKey, "", 1000 * 60 * dkInfo.getTimes());
-			redisOps.setWithTimeout(_redisKey, "", 1000 * 60 * dkInfo.getTimes());
+			redisOps.setWithTimeout(redisKey, "",  60 * dkInfo.getTimes());
+			redisOps.setWithTimeout(_redisKey, "", 60 * dkInfo.getTimes());
 			OderQueueUtil.setOderQueue(redisKey, 0L);
 			OderQueueUtil.setOderQueue(_redisKey, 0L);
 			
@@ -240,8 +240,8 @@ public class DKDealService {
 		
 		String redisKey = getOderRedisKey(id,2);
 		String _redisKey = getOderRedisKey(dealInfo.getId(),2);
-		redisOps.setWithTimeout(redisKey, "",  1000 * 60 * 60 * 30L);
-		redisOps.setWithTimeout(_redisKey, "",  1000 * 60 * 60 * 30L);
+		redisOps.setWithTimeout(redisKey, "",  60 * 60 * 30L);
+		redisOps.setWithTimeout(_redisKey, "",  60 * 60 * 30L);
 		OderQueueUtil.setOderQueue(redisKey, 0L);
 		OderQueueUtil.setOderQueue(_redisKey, 0L);
 	}
