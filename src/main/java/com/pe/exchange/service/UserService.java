@@ -157,10 +157,10 @@ public class UserService {
 
     private void initUserBalance(User user){
         List<UserBalance> list=new ArrayList<>();
-
-        list.add(new UserBalance(user.getId(),0,"",new BigDecimal(0),new BigDecimal(0)));
-        list.add(new UserBalance(user.getId(),1,"",new BigDecimal(0),new BigDecimal(0)));
+        list.add(new UserBalance(null,user.getId(),0,"",new BigDecimal(0),new BigDecimal(0)));
+        list.add(new UserBalance(null,user.getId(),1,"",new BigDecimal(0),new BigDecimal(0)));
         userBalanceDao.saveAll(list);
+
     }
     
     public void userNameExists(String userName) {

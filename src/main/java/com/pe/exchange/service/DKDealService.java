@@ -1,23 +1,14 @@
 package com.pe.exchange.service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.pe.exchange.dao.DKDealAppealDao;
 import com.pe.exchange.dao.DKDealDao;
 import com.pe.exchange.dao.UserBalanceDao;
+import com.pe.exchange.dao.UserBonusLogDao;
 import com.pe.exchange.dao.UserDao;
 import com.pe.exchange.entity.Appeal;
 import com.pe.exchange.entity.DKDealInfo;
 import com.pe.exchange.entity.User;
+import com.pe.exchange.entity.UserBonusLog;
 import com.pe.exchange.entity.UserPayInfo;
 import com.pe.exchange.exception.BizException;
 import com.pe.exchange.exception.SysException;
@@ -25,8 +16,16 @@ import com.pe.exchange.redis.RedisOps;
 import com.pe.exchange.utils.OderQueueUtil;
 import com.pe.exchange.utils.UserUtil;
 import com.pe.exchange.utils.VeriCodeUtils;
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -49,6 +48,7 @@ public class DKDealService {
 	 
 	 @Autowired
 	 UserBalanceDao userBalanceDao;
+	 @Autowired UserBonusLogDao userBonusLogDao;
 	 
 	 private final String key = "_orderKey";
 	 
@@ -202,7 +202,8 @@ public class DKDealService {
 	
 	
 	
-	
+
+	@Transactional(rollbackFor = Exception.class)
 	public void commitDK(Integer id) {
 		//卖家
 		DKDealInfo dkInfo = dkDealDao.findById(id).get();
@@ -218,6 +219,25 @@ public class DKDealService {
 		dkDealDao.saveAll(entitys);
 		
 		userBalanceDao.addDKBalance(dealInfo.getUser_id(), new BigDecimal(dealInfo.getDealNumber()));
+
+		List<UserBonusLog> bonusList=new ArrayList<>();
+		//卖家增加DK记录
+		UserBonusLog  userBonusLog=new UserBonusLog();
+		userBonusLog.setAmount(new BigDecimal(dealInfo.getDealNumber()));
+		userBonusLog.setUserId(dealInfo.getUser_id());
+		userBonusLog.setBonusCoinType(0);
+		userBonusLog.setBonusType(12);
+		bonusList.add(userBonusLog);
+
+		//买家减少DK记录
+		userBonusLog=new UserBonusLog();
+		userBonusLog.setAmount(new BigDecimal(dkInfo.getDealNumber()).multiply(new BigDecimal(-1)));
+		userBonusLog.setUserId(dkInfo.getUser_id());
+		userBonusLog.setBonusCoinType(1);
+		userBonusLog.setBonusType(12);
+		bonusList.add(userBonusLog);
+
+		userBonusLogDao.saveAll(bonusList);
 	/*	String redisKey = getOderRedisKey(id)+"_7";
 		String _redisKey = getOderRedisKey(dealInfo.getId())+"_7";
 		if(OderQueueUtil.getQueues().containsKey(arg0)) {

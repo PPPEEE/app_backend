@@ -34,4 +34,7 @@ public interface UserBalanceDao extends JpaRepository<UserBalance,Integer> {
 
     @Query(value = "select * from user_balance where coin_type=1 and balance>0",nativeQuery = true)
     List<UserBalance> findDNWithoutZero();
+
+    List<UserBalance> findByUserId(Integer userId);
+
 }

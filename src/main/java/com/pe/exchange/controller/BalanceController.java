@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @Api(tags = "收支记录")
 @RestController
-@RequestMapping("income")
-public class IncomeController {
+@RequestMapping("balance")
+public class BalanceController {
 
     @Autowired TransferService transferService;
     @Data
@@ -29,8 +29,27 @@ public class IncomeController {
         private int incomeType;
     }
 
+    @Data
+    public static class BalanceBean {
+        @ApiModelProperty(required = true,value = "币种,0DK,1DN")
+        private int coinType;
+
+    }
+
+    @ApiOperation("获取全部余额")
+    @GetMapping("get")
+    public Result getAllBalance(){
+        return Results.success(transferService.getBalance());
+    }
+
+    @ApiOperation("获取余额")
+    @GetMapping("getby")
+    public Result getBalance(@RequestBody BalanceBean balanceBean){
+        return Results.success(transferService.getBalance(balanceBean.getCoinType()));
+    }
+
     @ApiOperation("收支记录")
-    @GetMapping("list")
+    @GetMapping("incomeList")
     public Result incomeList(@RequestBody IncomeListBean incomeListBean){
         return Results.success(transferService.getIncomeList(incomeListBean.coinType,incomeListBean.incomeType));
     }

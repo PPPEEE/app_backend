@@ -36,6 +36,15 @@ public class TransferController {
         @ApiModelProperty(value = "转账数量",example = "8000")
         private String amount;
     }
+
+    @Data
+    @ApiModel
+    public static class ExchangeBean{
+
+        @ApiModelProperty(value = "转账数量",example = "8000")
+        private String amount;
+    }
+
     private static final String ORCODE_FORMAT = "JPEG";
 
     @Autowired
@@ -67,8 +76,8 @@ public class TransferController {
     @ApiOperation("兑换")
 
     @PostMapping("exchange")
-    public Result exchange(@RequestBody TransferBean transferBean) {
-        transferService.exchange(transferBean.getAmount());
+    public Result exchange(@RequestBody ExchangeBean exchangeBean) {
+        transferService.exchange(exchangeBean.getAmount());
         return Results.success();
     }
 

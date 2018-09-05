@@ -175,4 +175,13 @@ public class TransferService {
         }
         return new ArrayList<UserBonusLog>();
     }
+
+    public List<UserBalance> getBalance(){
+        Integer userId=UserUtil.get().getId();
+       return userBalanceDao.findByUserId(userId);
+    }
+    public UserBalance getBalance(int coinType){
+        Integer userId=UserUtil.get().getId();
+        return userBalanceDao.findByUserIdAndCoinType(userId,coinType);
+    }
 }
