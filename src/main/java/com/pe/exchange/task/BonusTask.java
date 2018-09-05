@@ -8,6 +8,7 @@ import com.pe.exchange.dao.UserDao;
 import com.pe.exchange.dao.UserInvitDao;
 import com.pe.exchange.entity.TransferLog;
 import com.pe.exchange.entity.UserBalance;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
+@Slf4j
 public class BonusTask {
     @Autowired TransferLogDao transferLogDao;
     @Autowired UserDao userDao;
@@ -29,10 +31,26 @@ public class BonusTask {
     public void transferBonus(){
         List<TransferLog> transferLogs = transferLogDao.findByBonusStatus(0);
         for (TransferLog transferLog : transferLogs) {
-
-            bonusTaskHandle.caclBonus(transferLog);
+            try {
+                bonusTaskHandle.caclBonus(transferLog);
+            }catch (Exception e){
+                log.error("转账奖励结算失败,转账ID:"+transferLog.getId()+",转账人: "+transferLog.getFromUserId()+",收款人: "+transferLog.getToUserId(),e);
+            }
         }
 
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void everydayRelease(){
+        List<UserBalance> dnWithoutZero = userBalanceDao.findDNWithoutZero();
+        for (UserBalance balance : dnWithoutZero) {
+
+           try {
+               bonusTaskHandle.release(balance);
+           }catch (Exception e){
+               log.error("用户每日释放失败,用户ID:"+balance.getUserId(),e);
+           }
+        }
     }
 
 

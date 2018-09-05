@@ -67,7 +67,7 @@ public class Trade {
     private BigDecimal dealNum;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(insertable = false,columnDefinition = "datetime not NULL DEFAULT CURRENT_TIMESTAMP")
+    @Column(insertable = false,updatable = false,columnDefinition = "datetime not NULL DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime addTime;
 
     /**

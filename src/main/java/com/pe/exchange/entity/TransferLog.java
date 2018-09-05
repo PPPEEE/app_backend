@@ -23,7 +23,7 @@ public class TransferLog {
     @Column(precision = 19,scale = 6)
     private BigDecimal amount;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(insertable = false,columnDefinition = "datetime not NULL DEFAULT CURRENT_TIMESTAMP")
+    @Column(insertable = false,updatable = false,columnDefinition = "datetime not NULL DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime addTime;
     /**
      * 奖励处理情况

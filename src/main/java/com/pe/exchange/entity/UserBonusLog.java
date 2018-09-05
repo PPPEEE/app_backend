@@ -20,10 +20,16 @@ public class UserBonusLog {
     private Integer id;
     private Integer userId;
     /**
-     * 1、对冲奖励  DN
-     * 2、直推奖励  DK
-     * 3、团队兑换奖励  DK
-     * 4、团队流通奖励 DK
+     * 0、冻结
+     * 1、对冲奖励  DN+
+     * 2、直推奖励  DK+
+     * 3、团队兑换奖励 DN- DK+
+     * 4、团队流通奖励 DN- DK+
+     * 5、每日释放 DN- DK+
+     * 10、正常兑换
+     * 11、正常转账
+     * 12、正常买卖
+     *
      */
     private Integer bonusType;
 
@@ -38,7 +44,7 @@ public class UserBonusLog {
     @Column(precision = 19,scale = 6)
     private BigDecimal amount;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(insertable = false,columnDefinition = "datetime not NULL DEFAULT CURRENT_TIMESTAMP")
+    @Column(insertable = false,updatable = false,columnDefinition = "datetime not NULL DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime addTime;
     /**
      * 状态,1正常  2取消
