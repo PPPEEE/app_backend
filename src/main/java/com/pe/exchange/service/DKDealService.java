@@ -1,6 +1,7 @@
 package com.pe.exchange.service;
 
-import com.pe.exchange.dao.DKDealAppealDao;
+import com.pe.exchange.dao.DKDealAppealD3ao;
+import com.pe.exchange.dao.DKDealAppeal122Dao;
 import com.pe.exchange.dao.DKDealDao;
 import com.pe.exchange.dao.UserBalanceDao;
 import com.pe.exchange.dao.UserBonusLogDao;
@@ -30,41 +31,41 @@ import java.util.Set;
 @Slf4j
 @Service
 public class DKDealService {
-	
+
 	@Autowired
 	private DKDealDao dkDealDao;
-	
+
 	 @Autowired
 	 RedisOps redisOps;
-	 
+
 	 @Autowired
 	 UserDao userDao;
-	 
+
 	 @Autowired
 	 UserPayInfoService userPayInfoService;
-	 
+
 	 @Autowired
-	 DKDealAppealDao dkDealAppealDao; 
-	 
+	 DKDealAppealDao dkDealAppealDao;
+
 	 @Autowired
 	 UserBalanceDao userBalanceDao;
 	 @Autowired UserBonusLogDao userBonusLogDao;
-	 
+
 	 private final String key = "_orderKey";
-	 
-	 
-	
+
+
+
 	/***
 	 * 查询用户DK总资产
 	 * @return
 	 */
 	public Integer getUserDKNumber() {
 	  User user = UserUtil.get();
-	 
+
 	  List<DKDealInfo> dkList = dkDealDao.getDKTotalNumber(user.getId());
 	  return computeDKTotal(dkList);
 	}
-	
+
 	/***
 	 * 每次重新计算用户DK资产额度
 	 * @param list
@@ -81,7 +82,7 @@ public class DKDealService {
 		}
 		return total;
 	}
-	
+
 	/**
 	 * 发布订单
 	 * @param dealInfo
@@ -103,12 +104,12 @@ public class DKDealService {
 		dkDealDao.save(dealInfo);
 		userBalanceDao.subDKBalance(user.getId(), new BigDecimal(dealInfo.getDealNumber()));
 	}
-	
+
 	/**
 	 * 取消订单
 	 */
 	public void cleanDKDeal(Integer id) {
-		
+
 		DKDealInfo dk = dkDealDao.findById(id).get();
 		if(dk.getStatus() == 2) {
 			dk.setStatus(0);
@@ -116,7 +117,7 @@ public class DKDealService {
 		dkDealDao.save(dk);
 		userBalanceDao.addDKBalance(dk.getUser_id(), new BigDecimal(dk.getDealNumber()));
 	}
-	
+
 	/***
 	 * 查询买或麦的全部订单
 	 * @return
@@ -131,7 +132,7 @@ public class DKDealService {
 		setUserInfo(list);
 		return list;
 	}
-	
+
 	private void setUserInfo(List<DKDealInfo> list) {
 		User u = null;
 		for (DKDealInfo dk : list) {
@@ -142,7 +143,7 @@ public class DKDealService {
 			dk.setUser(u);
 		}
 	}
-	
+
 	private List<UserPayInfo> getPayListByType(List<UserPayInfo> list ,String type){
 		List<UserPayInfo> _list = new ArrayList<UserPayInfo>();
 		if(type != null && !"".equals(type)) {
@@ -157,18 +158,18 @@ public class DKDealService {
 			return _list;
 		}
 		return list;
-		
+
 	}
-	
+
 	public DKDealInfo findDkById(Integer id) {
 		List<DKDealInfo> dkInfo = new ArrayList<DKDealInfo>();
 		dkInfo.add(dkDealDao.findById(id).get());
 		setUserInfo(dkInfo);
 		return dkInfo.size()>0?dkInfo.get(0):null;
-		
-		
+
+
 	}
-	
+
 	public void dkDeailPurchase(Integer id) {
 		Integer status = 0;
 		DKDealInfo dkInfo = dkDealDao.findById(id).get();
@@ -193,15 +194,15 @@ public class DKDealService {
 			redisOps.setWithTimeout(_redisKey, "", 60 * dkInfo.getTimes());
 			OderQueueUtil.setOderQueue(redisKey, 0L);
 			OderQueueUtil.setOderQueue(_redisKey, 0L);
-			
-			
+
+
 			//userBalanceDao.subDKBalance(UserUtil.get().getId(), new BigDecimal(dkInfo.getDealNumber()));
 		} catch (Exception e) {
 		}
 	}
-	
-	
-	
+
+
+
 
 	@Transactional(rollbackFor = Exception.class)
 	public void commitDK(Integer id) {
@@ -212,12 +213,12 @@ public class DKDealService {
 		//买家
 		DKDealInfo dealInfo = dkDealDao.findUserDKByNumber(number, dkInfo.getUser_id());
 		dealInfo.setStatus(1);
-		
+
 		Set<DKDealInfo> entitys = new HashSet<DKDealInfo>();
 		entitys.add(dkInfo);
 		entitys.add(dealInfo);
 		dkDealDao.saveAll(entitys);
-		
+
 		userBalanceDao.addDKBalance(dealInfo.getUser_id(), new BigDecimal(dealInfo.getDealNumber()));
 
 		List<UserBonusLog> bonusList=new ArrayList<>();
@@ -241,23 +242,23 @@ public class DKDealService {
 	/*	String redisKey = getOderRedisKey(id)+"_7";
 		String _redisKey = getOderRedisKey(dealInfo.getId())+"_7";
 		if(OderQueueUtil.getQueues().containsKey(arg0)) {
-			
+
 		}*/
 	}
-	
-	
+
+
 	public void paymentCommitOder(Integer id) {
-		
+
 		DKDealInfo dk = dkDealDao.findById(id).get();
 		dk.setStatus(6);
 		DKDealInfo dealInfo = dkDealDao.findUserDKByNumber(dk.getOrderNumber(), dk.getUser_id());
 		dealInfo.setStatus(6);
-		
+
 		Set<DKDealInfo> entitys = new HashSet<DKDealInfo>();
 		entitys.add(dk);
 		entitys.add(dealInfo);
 		dkDealDao.saveAll(entitys);
-		
+
 		String redisKey = getOderRedisKey(id,2);
 		String _redisKey = getOderRedisKey(dealInfo.getId(),2);
 		redisOps.setWithTimeout(redisKey, "",  60 * 60 * 30L);
@@ -265,13 +266,13 @@ public class DKDealService {
 		OderQueueUtil.setOderQueue(redisKey, 0L);
 		OderQueueUtil.setOderQueue(_redisKey, 0L);
 	}
-	
+
 	public String getOderRedisKey(Integer id,Integer type) {
 		DKDealInfo dkInfo = dkDealDao.findById(id).get();
 		return dkInfo.getId() + "_" + type + key;
 	}
-	
-	
+
+
 	public void oderAppeal(Integer id,String fileName,String desc) {
 		DKDealInfo dk = dkDealDao.findById(id).get();
 		if(dk.getType() == 7) {
@@ -284,5 +285,5 @@ public class DKDealService {
 			throw new BizException(305, "该订单状态不可申诉！");
 		}
 	}
-	
+
 }
