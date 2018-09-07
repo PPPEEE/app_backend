@@ -1,5 +1,19 @@
 package com.pe.exchange.service;
 
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.pe.exchange.common.ResultEnum;
+
 import com.pe.exchange.dao.DKDealAppealDao;
 import com.pe.exchange.dao.DKDealDao;
 import com.pe.exchange.dao.UserBalanceDao;
@@ -86,7 +100,7 @@ public class DKDealService {
 	 * 发布订单
 	 * @param dealInfo
 	 */
-	public void saveDKDeal(DKDealInfo dealInfo) {
+	public void saveDKDeal(DKDealInfo dealInfo,boolean flag) {
 		User user = UserUtil.get();
 		//绑定订单号
 		dealInfo.setOrderNumber(VeriCodeUtils.getOrderIdByUUId());
@@ -101,17 +115,21 @@ public class DKDealService {
 			}
 		}
 		dkDealDao.save(dealInfo);
-		userBalanceDao.subDKBalance(user.getId(), new BigDecimal(dealInfo.getDealNumber()));
+		if(flag) {
+			userBalanceDao.subDKBalance(user.getId(), new BigDecimal(dealInfo.getDealNumber()));
+		}
 	}
 	
 	/**
 	 * 取消订单
 	 */
 	public void cleanDKDeal(Integer id) {
-		
+		Integer userId = UserUtil.get().getId();
 		DKDealInfo dk = dkDealDao.findById(id).get();
-		if(dk.getStatus() == 2) {
+		if(dk.getStatus() == 2 && dk.getUser_id() == userId) {
 			dk.setStatus(0);
+		}else {
+			throw new BizException(ResultEnum.INTERNAL_SERVER_ERROR);
 		}
 		dkDealDao.save(dk);
 		userBalanceDao.addDKBalance(dk.getUser_id(), new BigDecimal(dk.getDealNumber()));
@@ -122,11 +140,12 @@ public class DKDealService {
 	 * @return
 	 */
 	public List<DKDealInfo> findDKDeailList(int type){
+		Integer userId = UserUtil.get().getId();
 		List<DKDealInfo> list =  null;
 		if(type == 0) {
-			list = dkDealDao.findUserDKList(UserUtil.get().getId());
+			list = dkDealDao.findUserDKList(userId);
 		}else {
-			list = dkDealDao.findTypeDKList(type);
+			list = dkDealDao.findTypeDKList(type,userId);
 		}
 		setUserInfo(list);
 		return list;
@@ -213,11 +232,13 @@ public class DKDealService {
 		DKDealInfo dealInfo = dkDealDao.findUserDKByNumber(number, dkInfo.getUser_id());
 		dealInfo.setStatus(1);
 		
+		if(dealInfo.getDealNumber() < dkInfo.getDealNumber()){
+			dkInfo.setDealNumber(dkInfo.getDealNumber()-dealInfo.getDealNumber());
+		}
 		Set<DKDealInfo> entitys = new HashSet<DKDealInfo>();
 		entitys.add(dkInfo);
 		entitys.add(dealInfo);
 		dkDealDao.saveAll(entitys);
-		
 		userBalanceDao.addDKBalance(dealInfo.getUser_id(), new BigDecimal(dealInfo.getDealNumber()));
 
 		List<UserBonusLog> bonusList=new ArrayList<>();
@@ -238,6 +259,12 @@ public class DKDealService {
 		bonusList.add(userBonusLog);
 
 		userBonusLogDao.saveAll(bonusList);
+		if(dealInfo.getDealNumber() < dkInfo.getDealNumber()) {
+			dkInfo.setId(null);
+			saveDKDeal(dkInfo,false);
+		}
+		
+		
 	/*	String redisKey = getOderRedisKey(id)+"_7";
 		String _redisKey = getOderRedisKey(dealInfo.getId())+"_7";
 		if(OderQueueUtil.getQueues().containsKey(arg0)) {

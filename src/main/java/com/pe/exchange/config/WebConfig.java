@@ -27,6 +27,7 @@ public class WebConfig implements WebMvcConfigurer {
         exclude.add("/user/sendCode");
         exclude.add("/user/userNameExists");
         exclude.add("/upload/*");//*所有类型的文件
+        exclude.add("/user/checkCode");
 
 
         //swagger相关

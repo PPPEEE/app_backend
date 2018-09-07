@@ -50,7 +50,7 @@ public class DKDealController {
 	 */
 	@PostMapping("releaseDK")
 	public Result releaseDk(@RequestBody DKDealInfo dealInfo) {
-		dkDealService.saveDKDeal(dealInfo);
+		dkDealService.saveDKDeal(dealInfo,true);
 		return Results.success();
 	}
 	
@@ -82,6 +82,13 @@ public class DKDealController {
 	@PostMapping("dkPurchase")
 	public Result dkDeailPurchase(@RequestBody Map<String, Integer> param) {
 		dkDealService.dkDeailPurchase(param.get("id"));
+		return Results.success();
+	}
+	
+	@PostMapping("dkClean")
+	public Result dkDeailClean(@RequestBody Map<String, Integer> param) {
+	
+		dkDealService.cleanDKDeal(param.get("id"));
 		return Results.success();
 	}
 	

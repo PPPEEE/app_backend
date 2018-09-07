@@ -199,7 +199,7 @@ public class UserController {
     
     @PostMapping("setPayPwd")
     public Result setPayPwd(@RequestBody Map<String, String> params) {
-    	userPayPwdService.updatePayPwd(params.get("payPwd"));
+    	userPayPwdService.updatePayPwd(params.get("payPwd"),params.get("code"));
     	return Results.success();
     }
     

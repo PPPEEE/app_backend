@@ -116,7 +116,8 @@ public class UserService {
     
     public void updateUserPwd(String pwd,String newPwd) {
     	User u = UserUtil.get();
-    	if(u.getPwd().equals(pwd)) {
+    	String userPwd = userDao.findById(u.getId()).get().getPwd();
+    	if(userPwd.equals(encryptPwd(pwd))) {
     		u.setPwd(encryptPwd(newPwd));
     		userDao.save(u);
     	}else {
@@ -130,9 +131,9 @@ public class UserService {
         if(u!=null){
             throw new BizException(ResultEnum.USER_ALREADY_EXISTS);
         }
-//        if(!checkVeriCode(user.getTelephone(),code)) {
-//        	throw new BizException(ResultEnum.CODE_ERROR);
-//        }
+        if(!checkVeriCode(user.getTelephone(),code)) {
+        	throw new BizException(ResultEnum.CODE_ERROR);
+        }
       
         user.setPwd(encryptPwd(user.getPwd()));
         try {
@@ -195,7 +196,7 @@ public class UserService {
 
     public String login(String username,String password){
         User user=userDao.findWithLogin(username);
-        if(user==null||!password.equals(user.getPwd()))
+        if(user==null||!encryptPwd(password).equals(user.getPwd()))
         {
             throw new BizException(ResultEnum.LOGIN_FAIL);
         }
