@@ -13,6 +13,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +27,7 @@ import java.util.List;
 public class BalanceController {
 
     @Autowired TransferService transferService;
+
     @Data
     @ApiModel
     public static class IncomeListBean {
@@ -50,13 +52,13 @@ public class BalanceController {
     }
 
     @ApiOperation("获取余额")
-    @GetMapping("getby")
+    @PostMapping("getby")
     public Result<UserBalance> getBalance(@RequestBody BalanceBean balanceBean){
         return Results.success(transferService.getBalance(balanceBean.getCoinType()));
     }
 
     @ApiOperation("收支记录")
-    @GetMapping("incomeList")
+    @PostMapping("incomeList")
     public Result<List<UserBonusLog>> incomeList(@RequestBody IncomeListBean incomeListBean){
         return Results.success(transferService.getIncomeList(incomeListBean.coinType,incomeListBean.incomeType));
     }
