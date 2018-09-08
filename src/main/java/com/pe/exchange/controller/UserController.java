@@ -164,7 +164,7 @@ public class UserController {
      */
     @PostMapping("getPwdUser")
     public Result updateUserInfo(@RequestBody Map<String,String> params) {
-    	userService.getUserPwd(params.get("userName"),params.get("telepone"),params.get("code"),params.get("pwd"));
+    	userService.getUserPwd(params.get("userName"),params.get("telephone"),params.get("code"),params.get("pwd"));
     	return Results.success();
     }
     
