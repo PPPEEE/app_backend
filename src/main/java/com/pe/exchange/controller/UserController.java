@@ -120,7 +120,7 @@ public class UserController {
     @SuppressWarnings("rawtypes")
 	@PostMapping("findUserInfo")
     @ApiOperation("查询用户资料")
-    public Result findUserInfo() {
+    public Result<UserInfo> findUserInfo() {
     	return Results.success(userService.findUserInfo());
     }
     
