@@ -1,11 +1,17 @@
 package com.pe.exchange.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel
 public class Result<T> {
+    @ApiModelProperty(position = 0)
     private int code;
+    @ApiModelProperty(position = 1)
     private String message;
+    @ApiModelProperty(position = 2)
     private  T data;
 
     public int getCode() {
