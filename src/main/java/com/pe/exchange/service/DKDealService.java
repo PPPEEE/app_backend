@@ -1,19 +1,7 @@
 package com.pe.exchange.service;
 
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.pe.exchange.common.ResultEnum;
-
 import com.pe.exchange.dao.DKDealAppealDao;
 import com.pe.exchange.dao.DKDealDao;
 import com.pe.exchange.dao.UserBalanceDao;
@@ -100,6 +88,7 @@ public class DKDealService {
 	 * 发布订单
 	 * @param dealInfo
 	 */
+	@Transactional(rollbackFor = Exception.class)
 	public void saveDKDeal(DKDealInfo dealInfo,boolean flag) {
 		User user = UserUtil.get();
 		//绑定订单号
@@ -123,6 +112,7 @@ public class DKDealService {
 	/**
 	 * 取消订单
 	 */
+	@Transactional(rollbackFor = Exception.class)
 	public void cleanDKDeal(Integer id) {
 		Integer userId = UserUtil.get().getId();
 		DKDealInfo dk = dkDealDao.findById(id).get();
@@ -187,7 +177,8 @@ public class DKDealService {
 		
 		
 	}
-	
+
+	@Transactional(rollbackFor = Exception.class)
 	public void dkDeailPurchase(Integer id) {
 		Integer status = 0;
 		DKDealInfo dkInfo = dkDealDao.findById(id).get();
