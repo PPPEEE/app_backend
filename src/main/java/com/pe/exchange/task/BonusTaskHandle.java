@@ -130,7 +130,6 @@ public class BonusTaskHandle {
         userBonusLog.setBonusCoinType(0);
         userBonusLog.setBonusType(5);
         list.add(userBonusLog);
-        list=new ArrayList<>();
         //DN减少记录
         userBonusLog=new UserBonusLog();
         userBonusLog.setAmount(amount.multiply(new BigDecimal(-1)));

@@ -114,7 +114,7 @@ public class TransferService {
 
         //dN增加记录
         userBonusLog=new UserBonusLog();
-        userBonusLog.setAmount(dkAmount);
+        userBonusLog.setAmount(dnAmount);
         userBonusLog.setUserId(userId);
         userBonusLog.setBonusCoinType(1);
         userBonusLog.setBonusType(10);
@@ -162,16 +162,23 @@ public class TransferService {
 
     }
 
-    public List<UserBonusLog> getIncomeList(int coinType,int incomeType){
+    public List<UserBonusLog> getIncomeList(int coinType,int incomeType,int pageNo,int pageSize){
+        if(pageNo<=0){
+            pageNo=1;
+        }
+        if(pageSize<=0){
+            pageSize=20;
+        }
+        int offset=(pageNo-1)*pageSize;
         Integer userId=UserUtil.get().getId();
         if(incomeType==0){
-            return userBonusLogDao.findBalanceList(coinType,userId);
+            return userBonusLogDao.findBalanceList(coinType,userId,offset,pageSize);
         }
         if(incomeType==1){
-            return userBonusLogDao.findBalanceIncomeList(coinType,userId);
+            return userBonusLogDao.findBalanceIncomeList(coinType,userId,offset,pageSize);
         }
         if(incomeType==2) {
-            return userBonusLogDao.findBalanceOutlayList(coinType,userId);
+            return userBonusLogDao.findBalanceOutlayList(coinType,userId,offset,pageSize);
         }
         return new ArrayList<UserBonusLog>();
     }
