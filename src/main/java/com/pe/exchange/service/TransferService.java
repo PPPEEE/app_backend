@@ -114,7 +114,7 @@ public class TransferService {
 
         //dN增加记录
         userBonusLog=new UserBonusLog();
-        userBonusLog.setAmount(dkAmount);
+        userBonusLog.setAmount(dnAmount);
         userBonusLog.setUserId(userId);
         userBonusLog.setBonusCoinType(1);
         userBonusLog.setBonusType(10);
