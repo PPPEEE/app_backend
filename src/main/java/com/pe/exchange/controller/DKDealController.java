@@ -69,7 +69,7 @@ public class DKDealController {
 		Pages pages = new Pages();
 		pages.setPageSize(Integer.valueOf(param.get("pageSize")));
 		pages.setCurrentPage(Integer.valueOf(param.get("pageNo")));
-		return Results.success(dkDealService.findDKDeailList(pages,Integer.valueOf(param.get("type"))));
+		return Results.success(dkDealService.findDKDeailList(pages,Integer.valueOf(param.get("type")),Integer.valueOf(param.get("status"))));
 	}
 	
 	/***

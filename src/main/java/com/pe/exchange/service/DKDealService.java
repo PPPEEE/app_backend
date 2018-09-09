@@ -130,16 +130,16 @@ public class DKDealService {
 	 * 查询买或麦的全部订单
 	 * @return
 	 */
-	public Pages findDKDeailList(Pages pages,int type){
+	public Pages findDKDeailList(Pages pages,int type,int status){
 		Integer userId = UserUtil.get().getId();
 		List<DKDealInfo> list =  null;
 		int count = pages.getPageSize();
 		if(type == 0) {
-			list = dkDealDao.findUserDKList(userId,pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
-			count = dkDealDao.findUserDKList(userId);
+			list = dkDealDao.findUserDKList(userId,status,pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
+			count = dkDealDao.findUserDKList(userId,status);
 		}else {
-			list = dkDealDao.findTypeDKList(type,userId,pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
-			count = dkDealDao.findTypeDKList(type,userId);
+			list = dkDealDao.findTypeDKList(type,userId,status,pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
+			count = dkDealDao.findTypeDKList(type,userId,status);
 		}
 		setUserInfo(list);
 		pages.setRecordTotal(count);
