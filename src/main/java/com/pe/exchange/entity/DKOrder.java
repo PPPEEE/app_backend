@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
@@ -15,9 +16,14 @@ public class DKOrder implements Serializable{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@ApiModelProperty(hidden =true)
 	private Integer id;
+	@ApiModelProperty(hidden = true)
 	private Integer userId;
+	
+	@ApiModelProperty(value = "订单号",position = 0)
 	private String orderNumber;
+	@ApiModelProperty(value = "类型",position = 1)
 	private String type;
 	public Integer getId() {
 		return id;

@@ -92,7 +92,7 @@ public class UserController {
      * @return
      */
 
-    @ApiOperation("验证码")
+    @ApiOperation("发送验证码")
 	@PostMapping("sendCode")
     public Result sendCode(@RequestBody Map<String,String> params) {
     	userService.getVeriCode(params.get("areaCode"), params.get("mobile"), Integer.valueOf(params.get("type")));
@@ -152,6 +152,7 @@ public class UserController {
      * @param userName
      * @return
      */
+    @ApiOperation("查询用户信息")
     @PostMapping("findUserBy")
     public Result findUserBy() {
     	return Results.success(userService.findUserBy());
@@ -162,6 +163,7 @@ public class UserController {
      * @param userName
      * @return
      */
+    @ApiOperation("找回密码")
     @PostMapping("getPwdUser")
     public Result updateUserInfo(@RequestBody Map<String,String> params) {
     	userService.getUserPwd(params.get("userName"),params.get("telephone"),params.get("code"),params.get("pwd"));
@@ -169,6 +171,12 @@ public class UserController {
     }
     
     
+    /***
+     * 重置用户登录
+     * @param params
+     * @return
+     */
+    @ApiOperation("重置用户登录")
     @PostMapping("setNewPwd")
     public Result setNewPwd(@RequestBody Map<String,String> params) {
     	userService.updateUserPwd(params.get("pwd"), params.get("newPwd"));
@@ -180,34 +188,64 @@ public class UserController {
      * @param userName
      * @return
      */
+    @ApiOperation("用户名是否存在")
     @PostMapping("userNameExists")
     public Result userNameExists(@RequestBody Map<String, String> params) {
     	userService.userNameExists(params.get("userName"));
     	return Results.success();
     }
     
-    
+    /***
+     * 用户是否绑定支付密码
+     * @return
+     */
+    @ApiOperation("用户是否绑定支付密码")
     @PostMapping("userPayPwdExists")
     public Result userPayPwdExits() {
     	return Results.success(userPayPwdService.isExits());
     }
     
+    /***
+     * 用户支付密码验证是否通过
+     * @param params
+     * @return
+     */
+    @ApiOperation("用户支付密码验证是否通过")
     @PostMapping("userPayPwdIsOk")
     public Result userPayPwdIsOk(@RequestBody  Map<String, String> params) {
     	return Results.success(userPayPwdService.isExits(params.get("payPwd")));
     }
     
+    /***
+     * 设置用户支付密码
+     * @param params
+     * @return
+     */
+    @ApiOperation("设置用户支付密码")
     @PostMapping("setPayPwd")
     public Result setPayPwd(@RequestBody Map<String, String> params) {
     	userPayPwdService.updatePayPwd(params.get("payPwd"),params.get("code"));
     	return Results.success();
     }
     
+    /***
+     * 当前用户版本，是否更新版本
+     * @param params
+     * @return
+     */
+    @ApiOperation("当前用户版本，是否更新版本")
     @PostMapping("newVersion")
     public Result findNewVersion() {
     	return Results.success(userService.getNewVersionInfo());
     }
     
+    
+    /***
+     * 我的团队
+     * @param params
+     * @return
+     */
+    @ApiOperation("我的团队")
     @PostMapping("myTeam")
     public Result findMyTeam() {
     	return Results.success(userService.findMyTeam());

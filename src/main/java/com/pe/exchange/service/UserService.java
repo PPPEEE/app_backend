@@ -127,9 +127,13 @@ public class UserService {
     
     @Transactional(rollbackFor = Exception.class)
     public void register(User user,String code){
-        User u= userDao.findByUserName(user.getUserName());
+        User u= userDao.findWithLogin(user.getUserName());
         if(u!=null){
             throw new BizException(ResultEnum.USER_ALREADY_EXISTS);
+        }
+        u= userDao.findWithLogin(user.getTelephone());
+        if(u!=null){
+            throw new BizException(ResultEnum.TELPHONE_ALREADY_EXISTS);
         }
         if(!checkVeriCode(user.getTelephone(),code)) {
         	throw new BizException(ResultEnum.CODE_ERROR);

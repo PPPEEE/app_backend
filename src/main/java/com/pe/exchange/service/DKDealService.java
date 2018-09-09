@@ -16,6 +16,7 @@ import com.pe.exchange.exception.BizException;
 import com.pe.exchange.exception.SysException;
 import com.pe.exchange.redis.RedisOps;
 import com.pe.exchange.utils.OderQueueUtil;
+import com.pe.exchange.utils.Pages;
 import com.pe.exchange.utils.UserUtil;
 import com.pe.exchange.utils.VeriCodeUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -129,16 +130,21 @@ public class DKDealService {
 	 * 查询买或麦的全部订单
 	 * @return
 	 */
-	public List<DKDealInfo> findDKDeailList(int type){
+	public Pages findDKDeailList(Pages pages,int type){
 		Integer userId = UserUtil.get().getId();
 		List<DKDealInfo> list =  null;
+		int count = pages.getPageSize();
 		if(type == 0) {
-			list = dkDealDao.findUserDKList(userId);
+			list = dkDealDao.findUserDKList(userId,pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
+			count = dkDealDao.findUserDKList(userId);
 		}else {
-			list = dkDealDao.findTypeDKList(type,userId);
+			list = dkDealDao.findTypeDKList(type,userId,pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
+			count = dkDealDao.findTypeDKList(type,userId);
 		}
 		setUserInfo(list);
-		return list;
+		pages.setRecordTotal(count);
+		pages.setResult(list);
+		return pages;
 	}
 	
 	private void setUserInfo(List<DKDealInfo> list) {
@@ -179,14 +185,14 @@ public class DKDealService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void dkDeailPurchase(Integer id) {
+	public void dkDeailPurchase(Integer id,Integer dealNumber) {
 		Integer status = 0;
 		DKDealInfo dkInfo = dkDealDao.findById(id).get();
 		status = dkInfo.getStatus();
 		DKDealInfo dkDealInfo = new DKDealInfo();
-		dkDealInfo.setDealNumber(dkInfo.getDealNumber());
+		dkDealInfo.setDealNumber(dealNumber);
 		dkDealInfo.setMinNumber(dkInfo.getMinNumber());
-		dkDealInfo.setMoney(dkInfo.getMoney());
+		dkDealInfo.setMoney(dealNumber * 0.8);
 		dkDealInfo.setOrderNumber(dkInfo.getOrderNumber());
 		dkDealInfo.setTimes(dkInfo.getTimes());
 		//初始买入订单默认状态为等待付款

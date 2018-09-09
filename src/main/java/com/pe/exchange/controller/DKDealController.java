@@ -14,8 +14,10 @@ import com.pe.exchange.common.Results;
 import com.pe.exchange.entity.DKDealInfo;
 import com.pe.exchange.service.DKDealService;
 import com.pe.exchange.utils.OderQueueUtil;
+import com.pe.exchange.utils.Pages;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 /**
 *
@@ -37,6 +39,7 @@ public class DKDealController {
 	 * 账户DK总资产
 	 * @return
 	 */
+	@ApiOperation("账户DK总资产")
 	@PostMapping("findTotal")
 	public Result findDKTotalNumber() {
 		return Results.success(dkDealService.getUserDKNumber());
@@ -48,6 +51,7 @@ public class DKDealController {
 	 * @param dealInfo
 	 * @return
 	 */
+	@ApiOperation("发布DK订单")
 	@PostMapping("releaseDK")
 	public Result releaseDk(@RequestBody DKDealInfo dealInfo) {
 		dkDealService.saveDKDeal(dealInfo,true);
@@ -59,9 +63,13 @@ public class DKDealController {
 	 * @param type 0全部 1买入 2卖入 
 	 * @return
 	 */
+	@ApiOperation("查询订单 ")
 	@PostMapping("dkByType")
 	public Result findDKDeailByType(@RequestBody Map<String, String> param) {
-		return Results.success(dkDealService.findDKDeailList(Integer.valueOf(param.get("type"))));
+		Pages pages = new Pages();
+		pages.setPageSize(Integer.valueOf(param.get("pageSize")));
+		pages.setCurrentPage(Integer.valueOf(param.get("pageNo")));
+		return Results.success(dkDealService.findDKDeailList(pages,Integer.valueOf(param.get("type"))));
 	}
 	
 	/***
@@ -69,6 +77,7 @@ public class DKDealController {
 	 * @param id
 	 * @return
 	 */
+	@ApiOperation("查询订单详情")
 	@PostMapping("findDkById")
 	public Result findDKById(@RequestBody Map<String, Integer> param) {
 		return Results.success(dkDealService.findDkById(param.get("id")));
@@ -79,12 +88,19 @@ public class DKDealController {
 	 * @param id
 	 * @return
 	 */
+	@ApiOperation("购买订单")
 	@PostMapping("dkPurchase")
 	public Result dkDeailPurchase(@RequestBody Map<String, Integer> param) {
-		dkDealService.dkDeailPurchase(param.get("id"));
+		dkDealService.dkDeailPurchase(param.get("id"),param.get("dealNumber"));
 		return Results.success();
 	}
 	
+	/**
+	 * 取消订单
+	 * @param param
+	 * @return
+	 */
+	@ApiOperation("取消订单")
 	@PostMapping("dkClean")
 	public Result dkDeailClean(@RequestBody Map<String, Integer> param) {
 	
@@ -97,6 +113,7 @@ public class DKDealController {
 	 * @param id
 	 * @return
 	 */
+	@ApiOperation("卖家(出售方)确认收款")
 	@PostMapping("commit")
 	public Result commitOder(@RequestBody Map<String, Integer> param) {
 		dkDealService.commitDK(param.get("id"));
@@ -108,6 +125,7 @@ public class DKDealController {
 	 * @param id
 	 * @return
 	 */
+	@ApiOperation("买家确认付款(购买方)确认收款")
 	@PostMapping("paymentCommitOder")
 	public Result paymentCommitOder(@RequestBody Map<String, Integer> param) {
 		
@@ -120,6 +138,7 @@ public class DKDealController {
 	 * @param oderId
 	 * @return
 	 */
+	@ApiOperation("订单过期时间")
 	@PostMapping("getExpiryTime")
 	public Result getExpiryTime(@RequestBody Map<String, Integer> param) {
 		Long times = 0L; 
@@ -137,6 +156,7 @@ public class DKDealController {
 	 * @param desc
 	 * @return
 	 */
+	@ApiOperation("申诉订单")
 	@PostMapping("oderAppeal")
 	public Result oderAppeal(@RequestBody Map<String, String> param) {
 		dkDealService.oderAppeal(Integer.valueOf(param.get("id")), param.get("fileName"), param.get("desc"));

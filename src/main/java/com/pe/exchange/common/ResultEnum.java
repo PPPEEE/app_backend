@@ -6,6 +6,7 @@ public enum ResultEnum {
     UNAUTHORIZED(401,"未认证"),//未认证（签名错误）
     LOGIN_FAIL(402,"用户名或密码错误"),//未认证（签名错误）
     USER_ALREADY_EXISTS(301,"用户已存在"),
+    TELPHONE_ALREADY_EXISTS(307,"该手机已被注册"),
     CODE_ERROR(302,"验证码失效"),
     USER_FAIL(303,"用户失效！"),
     USER_NOT_EXISTS(304,"目标用户不存在"),
