@@ -35,6 +35,12 @@ public class BalanceController {
         private int coinType;
         @ApiModelProperty(value = "收支类型,1为收入,2为支出,不填为全部")
         private int incomeType;
+
+        private int pageNo;
+
+        private int pageSize;
+
+
     }
 
     @Data
@@ -60,6 +66,6 @@ public class BalanceController {
     @ApiOperation("收支记录")
     @PostMapping("incomeList")
     public Result<List<UserBonusLog>> incomeList(@RequestBody IncomeListBean incomeListBean){
-        return Results.success(transferService.getIncomeList(incomeListBean.coinType,incomeListBean.incomeType));
+        return Results.success(transferService.getIncomeList(incomeListBean.coinType,incomeListBean.incomeType,incomeListBean.getPageNo(),incomeListBean.getPageSize()));
     }
 }
