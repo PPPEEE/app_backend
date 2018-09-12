@@ -172,13 +172,30 @@ public class TransferService {
         int offset=(pageNo-1)*pageSize;
         Integer userId=UserUtil.get().getId();
         if(incomeType==0){
-            return userBonusLogDao.findBalanceList(coinType,userId,offset,pageSize);
+
+                return userBonusLogDao.findBalanceList(coinType, userId, offset, pageSize);
+
         }
         if(incomeType==1){
-            return userBonusLogDao.findBalanceIncomeList(coinType,userId,offset,pageSize);
+
+                return userBonusLogDao.findBalanceIncomeList(coinType,userId,offset,pageSize);
+
         }
         if(incomeType==2) {
-            return userBonusLogDao.findBalanceOutlayList(coinType,userId,offset,pageSize);
+            if(coinType==0) {
+                return userBonusLogDao.findBalanceOutlayList(coinType,userId,offset,pageSize);
+            }
+            if(coinType==1){
+                return userBonusLogDao.findDNReleaseList( userId, offset, pageSize);
+            }
+        }
+        if(incomeType==3){
+            if(coinType==0){
+                return userBonusLogDao.findDKForzenList(userId, offset, pageSize);
+            }
+            if(coinType==1){
+                return  userBonusLogDao.findDNSpeedUpList(userId,offset,pageSize);
+            }
         }
         return new ArrayList<UserBonusLog>();
     }

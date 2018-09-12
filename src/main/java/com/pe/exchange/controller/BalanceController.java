@@ -33,7 +33,7 @@ public class BalanceController {
     public static class IncomeListBean {
         @ApiModelProperty(required = true,value = "币种,0DK,1DN")
         private int coinType;
-        @ApiModelProperty(value = "收支类型,1为收入,2为支出,不填为全部")
+        @ApiModelProperty(value = "收支类型,1:DK、DN均为收入,2: DK为支出 DN为释放,3: DK为冻结 DN为加速,不填为全部")
         private int incomeType;
 
         private int pageNo;
