@@ -31,4 +31,10 @@ public interface DKDealDao extends JpaRepository<DKDealInfo, Integer>{
 	@Query(value="select * from dkdeal_info where order_number = :orderNumber and user_id != :userId",nativeQuery = true)
 	DKDealInfo findUserDKByNumber(@Param("orderNumber")String orderNumber ,@Param("userId") Integer userId);
 	
+	@Query(value="select * from dkdeal_info where order_number = :orderNumber and user_id = :userId",nativeQuery = true)
+	DKDealInfo findUserDKByUserNumber(@Param("orderNumber")String orderNumber ,@Param("userId") Integer userId);
+	
+	@Query(value="SELECT SUM(deal_number) FROM dkdeal_info  where parent_order_number = :orderNumber ",nativeQuery = true)
+	Integer findOrderNumberSum(@Param("orderNumber") String orderNumber);
+	
 }

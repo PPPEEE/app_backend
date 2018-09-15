@@ -97,6 +97,7 @@ public class DKDealService {
 		dealInfo.setMoney(dealInfo.getDealNumber() * 0.8);
 		dealInfo.setUser_id(user.getId());
 		dealInfo.setStatus(2);
+		dealInfo.setTotalMoney(dealInfo.getDealNumber());
 		int total = 0;
 		if(2 == dealInfo.getType()) {
 			total = getUserDKNumber();
@@ -186,33 +187,96 @@ public class DKDealService {
 
 	@Transactional(rollbackFor = Exception.class)
 	public Integer dkDeailPurchase(Integer id,Integer dealNumber) {
-		Integer status = 0;
+		int userId = -1;
+		//Integer status = 0;
 		DKDealInfo dkInfo = dkDealDao.findById(id).get();
-		status = dkInfo.getStatus();
-		DKDealInfo dkDealInfo = new DKDealInfo();
-		dkDealInfo.setDealNumber(dealNumber);
-		dkDealInfo.setMinNumber(dkInfo.getMinNumber());
-		dkDealInfo.setMoney(dealNumber * 0.8);
-		dkDealInfo.setOrderNumber(dkInfo.getOrderNumber());
-		dkDealInfo.setTimes(dkInfo.getTimes());
-		//初始买入订单默认状态为等待付款
-		dkDealInfo.setStatus(3);
-		dkDealInfo.setUser_id(UserUtil.get().getId());
-		dkDealInfo.setType(dkInfo.getType()==1?2:1);
-		dkInfo.setStatus(3);
+		//int number = 0;
+		//status = dkInfo.getStatus();
 		try {
-			dkDealDao.save(dkInfo);
-			dkDealDao.save(dkDealInfo);
-			String redisKey = getOderRedisKey(id,1)+"_"+status;
-			String _redisKey = getOderRedisKey(dkDealInfo.getId(),1)+"_4";
-			redisOps.setWithTimeout(redisKey, "",  60 * dkInfo.getTimes());
-			redisOps.setWithTimeout(_redisKey, "", 60 * dkInfo.getTimes());
-			OderQueueUtil.setOderQueue(redisKey, 0L);
-			OderQueueUtil.setOderQueue(_redisKey, 0L);
+			if(dealNumber > dkInfo.getDealNumber()) {
+				throw new BizException(306,"购买金额大于订单金额");
+			}
+			
+		//	if(dealNumber < dkInfo.getDealNumber()) {
+				
+				String newOrderNumber = VeriCodeUtils.getOrderIdByUUId();
+				
+				DKDealInfo dkDealInfo = new DKDealInfo();
+				dkDealInfo.setDealNumber(dealNumber);
+				dkDealInfo.setOrderNumber(newOrderNumber);
+				dkDealInfo.setMinNumber(dkInfo.getMinNumber());
+				dkDealInfo.setMoney(dealNumber * 0.8);
+				dkDealInfo.setParentOrderNumber(dkInfo.getOrderNumber());
+				dkDealInfo.setTimes(dkInfo.getTimes());
+				//初始买入订单默认状态为等待付款
+				dkDealInfo.setStatus(3);
+				dkDealInfo.setUser_id(dkInfo.getUser_id());
+				dkDealInfo.setType(dkInfo.getType());
+				
+				
+				DKDealInfo dkDealInfo2 = new DKDealInfo();
+				dkDealInfo2.setDealNumber(dealNumber);
+				dkDealInfo2.setOrderNumber(newOrderNumber);
+				dkDealInfo2.setMinNumber(dkInfo.getMinNumber());
+				dkDealInfo2.setMoney(dealNumber * 0.8);
+				dkDealInfo2.setTimes(dkInfo.getTimes());
+				//初始买入订单默认状态为等待付款
+				dkDealInfo2.setStatus(3);
+				dkDealInfo2.setUser_id(UserUtil.get().getId());
+				dkDealInfo2.setType(dkInfo.getType()==1?2:1);
+				
+				dkDealDao.save(dkDealInfo);
+				dkDealDao.save(dkDealInfo2);
+				
+				String _redisKey = getOderRedisKey(dkDealInfo.getId(),dkInfo.getOrderNumber())+"_4";
+				redisOps.setWithTimeout(_redisKey, "", 60 * dkInfo.getTimes());
+				OderQueueUtil.setOderQueue(_redisKey, 0L);
+				String redisKey = getOderRedisKey(dkDealInfo2.getId(),"1")+"_4";
+				redisOps.setWithTimeout(redisKey, "",  60 * dkInfo.getTimes());
+				OderQueueUtil.setOderQueue(redisKey, 0L);
+				
+				userId = dkDealInfo2.getId();
+			/*}else {
+				DKDealInfo dkDealInfo = new DKDealInfo();
+				dkDealInfo.setDealNumber(dealNumber);
+				dkDealInfo.setMinNumber(dkInfo.getMinNumber());
+				dkDealInfo.setMoney(dealNumber * 0.8);
+				dkDealInfo.setOrderNumber(dkInfo.getOrderNumber());
+				dkDealInfo.setTimes(dkInfo.getTimes());
+				//初始买入订单默认状态为等待付款
+				dkDealInfo.setStatus(3);
+				dkDealInfo.setUser_id(UserUtil.get().getId());
+				dkDealInfo.setType(dkInfo.getType()==1?2:1);
+				dkInfo.setStatus(3);
+				dkDealDao.save(dkDealInfo);
+				userId = dkDealInfo.getId();
+				String _redisKey = getOderRedisKey(dkDealInfo.getId(),"1")+"_4";
+				redisOps.setWithTimeout(_redisKey, "", 60 * dkInfo.getTimes());
+				OderQueueUtil.setOderQueue(_redisKey, 0L);
+				String redisKey = getOderRedisKey(id,"1")+"_"+status;
+				redisOps.setWithTimeout(redisKey, "",  60 * dkInfo.getTimes());
+				OderQueueUtil.setOderQueue(redisKey, 0L);
+			}*/
+				
+				if(dkInfo.getDealNumber() - dealNumber == 0) {
+					dkInfo.setDealNumber(0);
+					dkInfo.setStatus(9);
+				/*	if(!(Integer.valueOf(dkInfo.getTotalMoney()).intValue() == Integer.valueOf(dealNumber).intValue())) {
+						
+					}else {
+						dkInfo.setStatus(3);
+					}*/
+				}else {
+					dkInfo.setStatus(2);//一次购买未完成则首次发布订单状态不变 仍可继续交易
+					dkInfo.setDealNumber(dkInfo.getDealNumber() - dealNumber);
+				}
+				dkDealDao.save(dkInfo);
+		
+			
 			//userBalanceDao.subDKBalance(UserUtil.get().getId(), new BigDecimal(dkInfo.getDealNumber()));
 		} catch (Exception e) {
 		}
-		return  dkDealInfo.getId();
+		return  userId;
 	}
 	
 	
@@ -254,11 +318,11 @@ public class DKDealService {
 		userBonusLog.setBonusType(12);
 		bonusList.add(userBonusLog);
 
-		userBonusLogDao.saveAll(bonusList);
+	/*	userBonusLogDao.saveAll(bonusList);
 		if(dealInfo.getDealNumber() < dkInfo.getDealNumber()) {
 			dkInfo.setId(null);
 			saveDKDeal(dkInfo,false);
-		}
+		}*/
 		
 		
 	/*	String redisKey = getOderRedisKey(id)+"_7";
@@ -281,15 +345,15 @@ public class DKDealService {
 		entitys.add(dealInfo);
 		dkDealDao.saveAll(entitys);
 		
-		String redisKey = getOderRedisKey(id,2);
-		String _redisKey = getOderRedisKey(dealInfo.getId(),2);
+		String redisKey = getOderRedisKey(id,"2");
+		String _redisKey = getOderRedisKey(dealInfo.getId(),"2");
 		redisOps.setWithTimeout(redisKey, "",  60 * 60 * 30L);
 		redisOps.setWithTimeout(_redisKey, "",  60 * 60 * 30L);
 		OderQueueUtil.setOderQueue(redisKey, 0L);
 		OderQueueUtil.setOderQueue(_redisKey, 0L);
 	}
 	
-	public String getOderRedisKey(Integer id,Integer type) {
+	public String getOderRedisKey(Integer id,String type) {
 		DKDealInfo dkInfo = dkDealDao.findById(id).get();
 		return dkInfo.getId() + "_" + type + key;
 	}

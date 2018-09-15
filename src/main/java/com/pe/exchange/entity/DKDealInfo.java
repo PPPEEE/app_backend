@@ -11,6 +11,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.ColumnDefault;
 
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiParam;
 import lombok.Data;
 
 @Data
@@ -54,6 +55,12 @@ public class DKDealInfo implements Serializable{
 	//付款时间 (分钟)
 	@ApiModelProperty(value = "付款时间(分钟)",position = 6)
 	private Integer times;
+	
+	//父类订单
+	private String parentOrderNumber;
+	
+	//订单总额
+	private Integer totalMoney;
 	
 	@ApiModelProperty(hidden = true)
 	private Integer user_id;

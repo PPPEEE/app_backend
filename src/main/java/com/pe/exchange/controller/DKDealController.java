@@ -135,16 +135,22 @@ public class DKDealController {
 	
 	/***
 	 * 订单过期时间
-	 * @param oderId
+	 * @param id
 	 * @return
 	 */
 	@ApiOperation("订单过期时间")
 	@PostMapping("getExpiryTime")
 	public Result getExpiryTime(@RequestBody Map<String, Integer> param) {
-		Long times = 0L; 
-		String rKey = dkDealService.getOderRedisKey(param.get("oderId"),1);
+		Long times = -1L; 
+		String rKey = dkDealService.getOderRedisKey(param.get("id"),"1")+"_4";
 		if(OderQueueUtil.getQueues().containsKey(rKey)) {
 			times = OderQueueUtil.get(rKey);
+		}
+		if(times < 0) {
+			String rKey2 = dkDealService.getOderRedisKey(param.get("id"),dkDealService.findDkById(param.get("id")).getParentOrderNumber())+"_4";
+			if(OderQueueUtil.getQueues().containsKey(rKey2)) {
+				times = OderQueueUtil.get(rKey2);
+			}
 		}
 		return Results.success(times);
 	}

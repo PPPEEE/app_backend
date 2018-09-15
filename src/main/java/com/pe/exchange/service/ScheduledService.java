@@ -36,6 +36,19 @@ public class ScheduledService {
 			if(times<1) {
 				DKDealInfo dk = dkDealDao.findById(Integer.valueOf(key.split("_")[0])).get();
 				if(3 == dk.getStatus() && "1".equals(key.split("_")[1])) {
+					dk.setStatus(Integer.valueOf(key.split("_")[key.split("_").length-1])); //没有拆分订单购买状态过期
+				}else if(3 == dk.getStatus() && key.split("_")[1].length() > 1) {
+					
+					//一次未全额购买过期 退回金额到原有账户
+					String orderNumber = key.split("_")[1];
+					DKDealInfo dks = dkDealDao.findUserDKByUserNumber(orderNumber, dk.getUser_id());
+					dks.setDealNumber(dks.getDealNumber()+dk.getDealNumber());
+					if(dks.getStatus() == 9 || dks.getStatus() == 3) {
+						dks.setStatus(2);
+					}
+					dkDealDao.save(dks);
+					
+					//本身过期
 					dk.setStatus(Integer.valueOf(key.split("_")[key.split("_").length-1]));
 				}else if(6 == dk.getStatus()) {
 					dk.setStatus(7);
