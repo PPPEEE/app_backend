@@ -185,7 +185,7 @@ public class DKDealService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public void dkDeailPurchase(Integer id,Integer dealNumber) {
+	public Integer dkDeailPurchase(Integer id,Integer dealNumber) {
 		Integer status = 0;
 		DKDealInfo dkInfo = dkDealDao.findById(id).get();
 		status = dkInfo.getStatus();
@@ -209,11 +209,10 @@ public class DKDealService {
 			redisOps.setWithTimeout(_redisKey, "", 60 * dkInfo.getTimes());
 			OderQueueUtil.setOderQueue(redisKey, 0L);
 			OderQueueUtil.setOderQueue(_redisKey, 0L);
-			
-			
 			//userBalanceDao.subDKBalance(UserUtil.get().getId(), new BigDecimal(dkInfo.getDealNumber()));
 		} catch (Exception e) {
 		}
+		return  dkDealInfo.getId();
 	}
 	
 	

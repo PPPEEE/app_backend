@@ -91,8 +91,8 @@ public class DKDealController {
 	@ApiOperation("购买订单")
 	@PostMapping("dkPurchase")
 	public Result dkDeailPurchase(@RequestBody Map<String, Integer> param) {
-		dkDealService.dkDeailPurchase(param.get("id"),param.get("dealNumber"));
-		return Results.success();
+		int id = dkDealService.dkDeailPurchase(param.get("id"),param.get("dealNumber"));
+		return Results.success(id);
 	}
 	
 	/**
