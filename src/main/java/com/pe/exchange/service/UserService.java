@@ -216,7 +216,7 @@ public class UserService {
         // 保存验证码到redis,有效期60s
         String key = mobile + VERI_CODE_FLAG;
         String savedCode = redisOps.get(key);
-        redisOps.delete(key);
+        //redisOps.delete(key);
         return code.equals(savedCode);
     }
 
