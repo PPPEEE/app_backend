@@ -63,7 +63,7 @@ public class TransferService {
         List<UserBonusLog> bonusList=new ArrayList<>();
         //转账方dk减少记录
         UserBonusLog  userBonusLog=new UserBonusLog();
-        userBonusLog.setAmount(dkAmount.multiply(new BigDecimal(-1)));
+        userBonusLog.setAmount(bigAmount.multiply(new BigDecimal(-1)));
         userBonusLog.setUserId(userId);
         userBonusLog.setBonusCoinType(0);
         userBonusLog.setBonusType(11);
@@ -72,8 +72,16 @@ public class TransferService {
         //收款方DK增加记录
         userBonusLog=new UserBonusLog();
         userBonusLog.setAmount(dkAmount);
-        userBonusLog.setUserId(userId);
+        userBonusLog.setUserId(destUser.getId());
         userBonusLog.setBonusCoinType(0);
+        userBonusLog.setBonusType(11);
+        bonusList.add(userBonusLog);
+
+        //收款方DN增加记录
+        userBonusLog=new UserBonusLog();
+        userBonusLog.setAmount(dnAmount);
+        userBonusLog.setUserId(destUser.getId());
+        userBonusLog.setBonusCoinType(1);
         userBonusLog.setBonusType(11);
         bonusList.add(userBonusLog);
 

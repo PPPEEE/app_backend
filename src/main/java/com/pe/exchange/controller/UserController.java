@@ -55,7 +55,7 @@ public class UserController {
     @PostMapping("login")
     @ApiOperation("登录")
     public Result doLogin(@RequestBody Map<String,String> params) {
-            String login = userService.login(params.get("mobile"),params.get("password"));
+                String login = userService.login(params.get("mobile"),params.get("password"));
             return Results.success(login);
     }
     

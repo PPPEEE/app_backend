@@ -44,7 +44,7 @@ public class BonusTaskHandle {
         UserBonusLog userBonusLog=new UserBonusLog();
         userBonusLog.setUserId(transferLog.getFromUserId());
         userBonusLog.setAmount(bonusDN);
-        userBonusLog.setBonusCoinType(0);
+        userBonusLog.setBonusCoinType(1);
         userBonusLog.setBonusType(1);
         bonusList.add(userBonusLog);
 
