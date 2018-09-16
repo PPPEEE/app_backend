@@ -41,6 +41,11 @@ public class UserPayPwdService {
 		if(!userService.checkVeriCode(user.getTelephone(), code)) {
 			throw new BizException(ResultEnum.CODE_ERROR);
 		}
+		
+		String reg = "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[\\s\\S]{8,32}$/";
+		if(!pwd.matches(reg)) {
+			throw new BizException(307,"请输入8-32位又大小写数字或符号组成的密码！");
+		}
 		UserPayPwdInfo upp = new UserPayPwdInfo();
 		upp.setUserId(user.getId());
 		upp.setPwd(encryptPwd(pwd));

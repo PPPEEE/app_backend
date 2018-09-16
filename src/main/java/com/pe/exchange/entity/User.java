@@ -34,6 +34,9 @@ public class User implements Serializable{
     @ApiModelProperty(hidden = true)
     @Column(length = 64)
     private String address;
+    
+    @Transient
+    private UserInfo uInfo;
 
     /**
      * 级别
@@ -47,6 +50,10 @@ public class User implements Serializable{
     private  Integer userLevel;
     
 
+    
+    @Transient
+    @ApiModelProperty(hidden = true)
+    private List<UserPayInfo> userInfo;
     
     @Transient
     @ApiModelProperty(hidden = true)
