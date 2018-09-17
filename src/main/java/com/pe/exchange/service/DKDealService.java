@@ -135,6 +135,22 @@ public class DKDealService {
 		userBalanceDao.addDKBalance(dk.getUser_id(), new BigDecimal(dk.getDealNumber()));
 	}
 	
+	public Pages findByUser(Pages pages,int type) {
+		Pages p = new Pages();
+		Integer userId = UserUtil.get().getId();
+		List<DKDealInfo> list =  null;
+		int count = pages.getPageSize();
+		list = dkDealDao.findUserDKList(userId,type+"",pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
+		count = dkDealDao.findUserDKList(userId,type+"");
+		setUserInfo(list);
+		p.setRecordTotal(count);
+		p.setResult(list);
+		return p;
+	}
+	
+	
+	
+	
 	/***
 	 * 查询买或麦的全部订单
 	 * @return

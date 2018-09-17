@@ -72,6 +72,14 @@ public class DKDealController {
 		return Results.success(dkDealService.findDKDeailList(pages,Integer.valueOf(param.get("type")),Integer.valueOf(param.get("status"))));
 	}
 	
+	@PostMapping("findByCurrentUser")
+	public Result findCurrentUserDkByType(@RequestBody Map<String, Integer> param) {
+		Pages pages = new Pages();
+		pages.setPageSize(Integer.valueOf(param.get("pageSize")));
+		pages.setCurrentPage(Integer.valueOf(param.get("pageNo")));
+		return Results.success(dkDealService.findByUser(pages,Integer.valueOf(param.get("type"))));
+	}
+	
 	/***
 	 * 查询订单详情
 	 * @param id
