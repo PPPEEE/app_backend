@@ -181,15 +181,19 @@ public class DKDealService {
 			dk.setUser(u);
 			
 			if(null != dk.getPay_user_id()) {
-				u = userDao.findById(dk.getPay_user_id()).get();
-				List<UserPayInfo> uPList2 =userPayInfoService.findUserPayInfoList(dk.getPay_user_id());
-				u.setUserPayInfo(getPayListByType(uPList2,dk.getPayInfo()));
-				uInfo = userInfoDao.findById(dk.getPay_user_id());
-				if(uInfo.isPresent()) {
-					u.setUInfo(uInfo.get());
+				Optional<User> uO =userDao.findById(dk.getPay_user_id());
+				if(uO.isPresent()) {
+					u = uO.get();
+					List<UserPayInfo> uPList2 =userPayInfoService.findUserPayInfoList(dk.getPay_user_id());
+					u.setUserPayInfo(getPayListByType(uPList2,dk.getPayInfo()));
+					uInfo = userInfoDao.findById(dk.getPay_user_id());
+					if(uInfo.isPresent()) {
+						u.setUInfo(uInfo.get());
+					}
+					u.setPwd("");
+					dk.setPayUser(u);
 				}
-				u.setPwd("");
-				dk.setPayUser(u);
+				
 			}
 		}
 	}
