@@ -329,23 +329,25 @@ public class DKDealService {
 		userBalanceDao.addDKBalance(dealInfo.getUser_id(), new BigDecimal(dealInfo.getDealNumber()));
 
 		List<UserBonusLog> bonusList=new ArrayList<>();
-		//卖家增加DK记录
+		//买家增加DK记录
 		UserBonusLog  userBonusLog=new UserBonusLog();
-		userBonusLog.setAmount(new BigDecimal(dealInfo.getDealNumber()));
+		userBonusLog.setAmount(new BigDecimal(dealInfo.getMoney()));
 		userBonusLog.setUserId(dealInfo.getUser_id());
 		userBonusLog.setBonusCoinType(0);
 		userBonusLog.setBonusType(12);
 		bonusList.add(userBonusLog);
 
-		//买家减少DK记录
+		//卖家减少DK记录
 		userBonusLog=new UserBonusLog();
-		userBonusLog.setAmount(new BigDecimal(dkInfo.getDealNumber()).multiply(new BigDecimal(-1)));
+		userBonusLog.setAmount(new BigDecimal(dealInfo.getDealNumber()).multiply(new BigDecimal(-1)));
 		userBonusLog.setUserId(dkInfo.getUser_id());
 		userBonusLog.setBonusCoinType(1);
 		userBonusLog.setBonusType(12);
 		bonusList.add(userBonusLog);
 
-	/*	userBonusLogDao.saveAll(bonusList);
+		userBonusLogDao.saveAll(bonusList);
+
+	/*
 		if(dealInfo.getDealNumber() < dkInfo.getDealNumber()) {
 			dkInfo.setId(null);
 			saveDKDeal(dkInfo,false);
