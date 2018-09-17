@@ -144,11 +144,21 @@ public class DKDealService {
 		List<DKDealInfo> list =  null;
 		int count = pages.getPageSize();
 		if(type == 0) {
-			list = dkDealDao.findUserDKList(userId,status,pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
-			count = dkDealDao.findUserDKList(userId,status);
+			if(status == -1) {
+				list = dkDealDao.findUserDKList(userId,pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
+				count = dkDealDao.findUserDKList(userId);
+			}else {
+				list = dkDealDao.findUserDKList(userId,status,pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
+				count = dkDealDao.findUserDKList(userId,status);
+			}
 		}else {
-			list = dkDealDao.findTypeDKList(type,userId,status,pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
-			count = dkDealDao.findTypeDKList(type,userId,status);
+			if(status == -1) {
+				list = dkDealDao.findTypeDKList(type,userId,pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
+				count = dkDealDao.findTypeDKList(type,userId);
+			}else {
+				list = dkDealDao.findTypeDKList(type,userId,status,pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
+				count = dkDealDao.findTypeDKList(type,userId,status);
+			}
 		}
 		setUserInfo(list);
 		pages.setRecordTotal(count);
