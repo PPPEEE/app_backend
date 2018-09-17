@@ -11,6 +11,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
 import java.awt.image.BufferedImage;
 
 @Slf4j
@@ -31,9 +35,12 @@ public class TransferController {
     @Data
     @ApiModel
     public static class TransferBean{
-        @ApiModelProperty(value = "目标地址,转换时填,兑换时不填",example = "")
+        @ApiModelProperty(value = "目标地址",example = "")
+        @NotBlank(message = "目标地址格式不正确")
         private String address;
+
         @ApiModelProperty(value = "转账数量",example = "8000")
+        @DecimalMin(value = "0.000001")
         private String amount;
     }
 
@@ -42,6 +49,7 @@ public class TransferController {
     public static class ExchangeBean{
 
         @ApiModelProperty(value = "转账数量",example = "8000")
+        @DecimalMin(value = "0.000001")
         private String amount;
     }
 
@@ -67,7 +75,10 @@ public class TransferController {
     @ApiOperation("转账")
 
     @PostMapping("transfer")
-    public Result transfer(@RequestBody TransferBean transferBean) {
+    public Result transfer( @Validated @RequestBody TransferBean transferBean, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            return Results.fail("参数格式不正常");
+        }
         transferService.transfer(transferBean.getAddress(), transferBean.getAmount());
         return Results.success();
     }
