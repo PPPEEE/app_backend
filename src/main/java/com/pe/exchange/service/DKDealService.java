@@ -1,16 +1,29 @@
 package com.pe.exchange.service;
 
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.pe.exchange.common.ResultEnum;
 import com.pe.exchange.dao.DKDealAppealDao;
 import com.pe.exchange.dao.DKDealDao;
 import com.pe.exchange.dao.UserBalanceDao;
 import com.pe.exchange.dao.UserBonusLogDao;
 import com.pe.exchange.dao.UserDao;
+import com.pe.exchange.dao.UserInfoDao;
 import com.pe.exchange.entity.Appeal;
 import com.pe.exchange.entity.DKDealInfo;
 import com.pe.exchange.entity.User;
 import com.pe.exchange.entity.UserBonusLog;
+import com.pe.exchange.entity.UserInfo;
 import com.pe.exchange.entity.UserPayInfo;
 import com.pe.exchange.exception.BizException;
 import com.pe.exchange.exception.SysException;
@@ -19,16 +32,8 @@ import com.pe.exchange.utils.OderQueueUtil;
 import com.pe.exchange.utils.Pages;
 import com.pe.exchange.utils.UserUtil;
 import com.pe.exchange.utils.VeriCodeUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -54,6 +59,9 @@ public class DKDealService {
 	 @Autowired UserBonusLogDao userBonusLogDao;
 	 
 	 private final String key = "_orderKey";
+	 
+	 @Autowired
+	 private UserInfoDao userInfoDao; 
 	 
 	 
 	
@@ -150,12 +158,29 @@ public class DKDealService {
 	
 	private void setUserInfo(List<DKDealInfo> list) {
 		User u = null;
+		Optional<UserInfo> uInfo = null;
 		for (DKDealInfo dk : list) {
 			u = userDao.findById(dk.getUser_id()).get();
 			List<UserPayInfo> uPList =userPayInfoService.findUserPayInfoList(dk.getUser_id());
-			u.setUserPayInfo(getPayListByType(uPList,dk.getPayInfo()));
+			u.setUserInfo(getPayListByType(uPList,dk.getPayInfo()));
+			uInfo = userInfoDao.findById(dk.getUser_id());
+			if(uInfo.isPresent()) {
+				u.setUInfo(uInfo.get());
+			}
 			u.setPwd("");
 			dk.setUser(u);
+			
+			if(null != dk.getPay_user_id()) {
+				u = userDao.findById(dk.getPay_user_id()).get();
+				List<UserPayInfo> uPList2 =userPayInfoService.findUserPayInfoList(dk.getPay_user_id());
+				u.setUserPayInfo(getPayListByType(uPList2,dk.getPayInfo()));
+				uInfo = userInfoDao.findById(dk.getPay_user_id());
+				if(uInfo.isPresent()) {
+					u.setUInfo(uInfo.get());
+				}
+				u.setPwd("");
+				dk.setPayUser(u);
+			}
 		}
 	}
 	
@@ -224,6 +249,8 @@ public class DKDealService {
 				dkDealInfo2.setStatus(3);
 				dkDealInfo2.setUser_id(UserUtil.get().getId());
 				dkDealInfo2.setType(dkInfo.getType()==1?2:1);
+				dkDealInfo2.setPay_user_id(dkInfo.getUser_id());
+				
 				
 				dkDealDao.save(dkDealInfo);
 				dkDealDao.save(dkDealInfo2);

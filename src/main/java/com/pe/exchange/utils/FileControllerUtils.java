@@ -46,7 +46,8 @@ public class FileControllerUtils {
         	file.getName();
             String saveFileName = VeriCodeUtils.getOrderIdByUUId()+"_"+System.currentTimeMillis()+file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."), file.getOriginalFilename().length());
             File saveFile_ = new File(request.getSession().getServletContext().getRealPath("/upload/") + saveFileName);
-            File saveFile = new File("/opt/app_end/upload/" + saveFileName);
+            System.out.println(saveFile_.getPath());
+            File saveFile = new File("/opt/exchange/upload/" + saveFileName);
             List<File> listFiles = new ArrayList<File>();
             listFiles.add(saveFile_);
             listFiles.add(saveFile);

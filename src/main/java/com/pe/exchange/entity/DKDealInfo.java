@@ -65,8 +65,14 @@ public class DKDealInfo implements Serializable{
 	@ApiModelProperty(hidden = true)
 	private Integer user_id;
 	
+	private Integer pay_user_id = -1;
+	
 	//发布者信息
 	@Transient
 	private User user;
+	
+	//发布者信息
+	@Transient
+	private User payUser;
 	
 }
