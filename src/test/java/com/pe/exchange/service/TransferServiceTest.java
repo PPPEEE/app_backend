@@ -14,7 +14,7 @@ public class TransferServiceTest {
     @Test
     public void transfer() {
        // UserUtil.set(111);
-        transferService.transfer("111111","100");
+        transferService.transfer("111111","100","11","11");
 
     }
 

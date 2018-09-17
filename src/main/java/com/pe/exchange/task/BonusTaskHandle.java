@@ -11,6 +11,7 @@ import com.pe.exchange.entity.User;
 import com.pe.exchange.entity.UserBalance;
 import com.pe.exchange.entity.UserBonusLog;
 import com.pe.exchange.entity.UserInvit;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -140,5 +141,10 @@ public class BonusTaskHandle {
 
         userBonusLogDao.saveAll(list);
 
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updateUserLevel(Integer userId,Integer userLevel){
+        userDao.updateUserLevel(userId,userLevel);
     }
 }

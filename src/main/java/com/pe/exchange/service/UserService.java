@@ -19,6 +19,7 @@ import com.pe.exchange.exception.SysException;
 import com.pe.exchange.redis.RedisOps;
 import com.pe.exchange.task.UserInvitTask;
 import com.pe.exchange.utils.CopyBTCAddressUtil;
+import com.pe.exchange.utils.PasswordUtil;
 import com.pe.exchange.utils.SHA256Util;
 import com.pe.exchange.utils.SmsAppUtils;
 import com.pe.exchange.utils.TokenGeneratorUtil;
@@ -30,7 +31,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +43,8 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    @Value("${spring.profiles.active}")
-    String env;
+
+
 
     private static final String VERI_CODE_FLAG = "veri";
     private static final String TOKEN_FLAG = "TOKEN";
@@ -73,6 +76,16 @@ public class UserService {
 			throw new SysException();
 		}
     }
+    public void updateUserInfo(UserInfo userInfo,User user) {
+        try {
+            userInfo.setUserId(user.getId());
+            log.info("开始执行修改用户信息,用户ID："+userInfo.getUserId());
+            userInfoDao.save(userInfo);
+        } catch (Exception e) {
+            log.error("系统异常:",e);
+            throw new SysException();
+        }
+    }
     
     public UserInfo findUserInfo() {
     	User user =  UserUtil.get();
@@ -91,7 +104,7 @@ public class UserService {
 
         String code = VeriCodeUtils.random(6);
 
-        if(!env.equals(SwaggerConfig.PROFILE_PROD)) {
+        if(ProfileService.isTest) {
             code = "000000";
             timeout=timeout*10;
         }
@@ -117,8 +130,8 @@ public class UserService {
     public void updateUserPwd(String pwd,String newPwd) {
     	User u = UserUtil.get();
     	String userPwd = userDao.findById(u.getId()).get().getPwd();
-    	if(userPwd.equals(encryptPwd(pwd))) {
-    		u.setPwd(encryptPwd(newPwd));
+    	if(userPwd.equals(PasswordUtil.encryptPwd(pwd,u.getAddress()))) {
+    		u.setPwd(PasswordUtil.encryptPwd(newPwd,u.getAddress()));
     		userDao.save(u);
     	}else {
     		throw new BizException(ResultEnum.LOGIN_FAIL);
@@ -139,15 +152,16 @@ public class UserService {
         	throw new BizException(ResultEnum.CODE_ERROR);
         }
       
-        user.setPwd(encryptPwd(user.getPwd()));
+
         try {
             userDao.save(user);
             UserInfo uInfo = new UserInfo();
             uInfo.setUserId(user.getId());
             uInfo.setMobile(user.getTelephone());
-            updateUserInfo(uInfo);
+            updateUserInfo(uInfo,user);
             user.setAddress(CopyBTCAddressUtil.generateAddress(user.getId()));
             user.setUserLevel(0);
+            user.setPwd(PasswordUtil.encryptPwd(user.getPwd(),user.getAddress()));
             userDao.save(user);
             initUserBalance(user);
             if(user.getRefereeId()!=null){
@@ -192,7 +206,7 @@ public class UserService {
         if(!checkVeriCode(u.getTelephone(),code) && (code != null || !"".equals(code))) {
         	throw new BizException(ResultEnum.CODE_ERROR);
         }
-        u.setPwd(encryptPwd(pwd));
+        u.setPwd(PasswordUtil.encryptPwd(pwd,u.getAddress()));
         userDao.save(u);
     }
     
@@ -200,7 +214,7 @@ public class UserService {
 
     public String login(String username,String password){
         User user=userDao.findWithLogin(username);
-        if(user==null||!encryptPwd(password).equals(user.getPwd()))
+        if(user==null||!PasswordUtil.encryptPwd(password,user.getAddress()).equals(user.getPwd()))
         {
             throw new BizException(ResultEnum.LOGIN_FAIL);
         }
@@ -216,14 +230,13 @@ public class UserService {
         // 保存验证码到redis,有效期60s
         String key = mobile + VERI_CODE_FLAG;
         String savedCode = redisOps.get(key);
-        //redisOps.delete(key);
+        if(ProfileService.isProd) {
+            redisOps.delete(key);
+        }
         return code.equals(savedCode);
     }
 
-    private String encryptPwd(String pwd){
-         return SHA256Util
-             .sha256Str(pwd + SHA256Util.sha256Str(pwd));
-    }
+
     private void sendVeriCode(String areaCode, String mobile, int type, String code) {
         String content = "";
         if (type == 1) {

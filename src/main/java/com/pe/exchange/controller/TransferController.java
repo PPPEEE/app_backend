@@ -3,6 +3,7 @@ package com.pe.exchange.controller;
 import com.pe.exchange.common.Result;
 import com.pe.exchange.common.Results;
 import com.pe.exchange.service.TransferService;
+import com.pe.exchange.service.UserService;
 import com.pe.exchange.utils.QrCodeUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
@@ -32,6 +33,8 @@ import java.awt.image.BufferedImage;
 @RequestMapping("transfer")
 public class TransferController {
 
+
+
     @Data
     @ApiModel
     public static class TransferBean{
@@ -42,6 +45,12 @@ public class TransferController {
         @ApiModelProperty(value = "转账数量",example = "8000")
         @DecimalMin(value = "0.000001")
         private String amount;
+
+        @ApiModelProperty(value = "验证码",example = "000000")
+        private String verifiCode;
+
+        @ApiModelProperty(value = "支付密码",example = "000000")
+        private String payPwd;
     }
 
     @Data
@@ -79,13 +88,13 @@ public class TransferController {
         if(bindingResult.hasErrors()){
             return Results.fail("参数格式不正常");
         }
-        transferService.transfer(transferBean.getAddress(), transferBean.getAmount());
+
+        transferService.transfer(transferBean.getAddress(), transferBean.getAmount(),transferBean.getPayPwd(),transferBean.getVerifiCode());
         return Results.success();
     }
 
 
     @ApiOperation("兑换")
-
     @PostMapping("exchange")
     public Result exchange(@RequestBody ExchangeBean exchangeBean) {
         transferService.exchange(exchangeBean.getAmount());

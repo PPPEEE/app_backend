@@ -26,6 +26,9 @@ import java.util.List;
 @Slf4j
 @Service
 public class TransferService {
+
+    @Autowired UserService userService;
+    @Autowired UserPayPwdService userPayPwdService;
     @Autowired UserDao userDao;
     @Autowired UserBalanceDao userBalanceDao;
     @Autowired TransferLogDao transferLogDao;
@@ -40,18 +43,28 @@ public class TransferService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void transfer(String address,String amount){
+    public void transfer(String address,String amount,String payPwd,String code){
+
+        User user=UserUtil.get();
+        boolean isChecked = userService.checkVeriCode(user.getTelephone(), code);
+        if(!isChecked){
+            throw new BizException(ResultEnum.CODE_ERROR);
+        }
+        isChecked=userPayPwdService.isExits(payPwd);
+        if(!isChecked){
+            throw new BizException(ResultEnum.PAY_PWD_ERROR);
+        }
         BigDecimal bigAmount=new BigDecimal(amount);
-        Integer userId=UserUtil.get().getId();
+
         User destUser=userDao.findByAddress(address);
         if(destUser==null){
             throw new BizException(ResultEnum.USER_NOT_EXISTS);
         }
-        UserBalance balance=userBalanceDao.findByUserIdAndCoinType(userId,0);
+        UserBalance balance=userBalanceDao.findByUserIdAndCoinType(user.getId(),0);
         if(balance.getBalance().compareTo(bigAmount)<0){
             throw new BizException(ResultEnum.INSUFFICIENT_BALANCE);
         }
-        int updateCount = userBalanceDao.subDKBalance(userId, bigAmount);
+        int updateCount = userBalanceDao.subDKBalance(user.getId(), bigAmount);
         if(updateCount==0){
             throw new BizException(ResultEnum.INSUFFICIENT_BALANCE);
         }
@@ -64,7 +77,7 @@ public class TransferService {
         //转账方dk减少记录
         UserBonusLog  userBonusLog=new UserBonusLog();
         userBonusLog.setAmount(bigAmount.multiply(new BigDecimal(-1)));
-        userBonusLog.setUserId(userId);
+        userBonusLog.setUserId(user.getId());
         userBonusLog.setBonusCoinType(0);
         userBonusLog.setBonusType(11);
         bonusList.add(userBonusLog);
@@ -90,7 +103,7 @@ public class TransferService {
         //保存一条转账记录
         TransferLog transferLog=new TransferLog();
         transferLog.setAmount(bigAmount);
-        transferLog.setFromUserId(userId);
+        transferLog.setFromUserId(user.getId());
         transferLog.setToUserId(destUser.getId());
         transferLogDao.save(transferLog);
     }
