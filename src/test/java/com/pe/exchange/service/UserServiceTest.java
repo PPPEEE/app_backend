@@ -28,7 +28,7 @@ public class UserServiceTest {
         User user = new User();
         user.setTelephone("18576739167");
         user.setPwd("12sdf13");
-        user.setUserName("谢灿");
+        user.setUserName("sss");
         int aa = userBalanceDao.subDKBalance(111, new BigDecimal(10000));
         System.out.println(aa);
         // userService.register(user,"000000");
