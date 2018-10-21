@@ -67,7 +67,7 @@ public class BonusTask {
             //再查出推荐人数达标的
             List<Integer> userIds = userInvitDao.findInvitedUserIBydUserId(userBalance.getUserId(),1000,1);
             if(userIds.size()>=5){
-                userDao.updateUserLevel(userBalance.getUserId(),2);
+                bonusTaskHandle.updateUserLevel(userBalance.getUserId(),2);
             }
 
         }
@@ -80,7 +80,7 @@ public class BonusTask {
             //再查出推荐人数达标的
             List<Integer> userIds = userInvitDao.findInvitedUserIBydUserId(userBalance.getUserId(),1000,10);
             if(userIds.size()>=1){
-                userDao.updateUserLevel(userBalance.getUserId(),1);
+                bonusTaskHandle.updateUserLevel(userBalance.getUserId(),1);
             }
 
         }

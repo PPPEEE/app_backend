@@ -3,8 +3,10 @@ package com.pe.exchange.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -19,6 +21,7 @@ import com.pe.exchange.dao.UserBalanceDao;
 import com.pe.exchange.dao.UserBonusLogDao;
 import com.pe.exchange.dao.UserDao;
 import com.pe.exchange.dao.UserInfoDao;
+import com.pe.exchange.dao.UserPayInfoDao;
 import com.pe.exchange.entity.Appeal;
 import com.pe.exchange.entity.DKDealInfo;
 import com.pe.exchange.entity.User;
@@ -62,6 +65,9 @@ public class DKDealService {
 	 
 	 @Autowired
 	 private UserInfoDao userInfoDao; 
+	 
+	 @Autowired
+	 private UserPayInfoDao userPayInfoDao;
 	 
 	 
 	
@@ -135,6 +141,22 @@ public class DKDealService {
 		userBalanceDao.addDKBalance(dk.getUser_id(), new BigDecimal(dk.getDealNumber()));
 	}
 	
+	public Pages findByUser(Pages pages,int type) {
+		Pages p = new Pages();
+		Integer userId = UserUtil.get().getId();
+		List<DKDealInfo> list =  null;
+		int count = pages.getPageSize();
+		list = dkDealDao.findUserDKList(userId,type+"",pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
+		count = dkDealDao.findUserDKList(userId,type+"");
+		setUserInfo(list);
+		p.setRecordTotal(count);
+		p.setResult(list);
+		return p;
+	}
+	
+	
+	
+	
 	/***
 	 * 查询买或麦的全部订单
 	 * @return
@@ -144,11 +166,21 @@ public class DKDealService {
 		List<DKDealInfo> list =  null;
 		int count = pages.getPageSize();
 		if(type == 0) {
-			list = dkDealDao.findUserDKList(userId,status,pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
-			count = dkDealDao.findUserDKList(userId,status);
+			if(status == -1) {
+				list = dkDealDao.findUserDKList(userId,pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
+				count = dkDealDao.findUserDKList(userId);
+			}else {
+				list = dkDealDao.findUserDKList(userId,status,pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
+				count = dkDealDao.findUserDKList(userId,status);
+			}
 		}else {
-			list = dkDealDao.findTypeDKList(type,userId,status,pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
-			count = dkDealDao.findTypeDKList(type,userId,status);
+			if(status == -1) {
+				list = dkDealDao.findTypeDKList(type,userId,pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
+				count = dkDealDao.findTypeDKList(type,userId);
+			}else {
+				list = dkDealDao.findTypeDKList(type,userId,status,pages.getCurrentPage()*pages.getPageSize()-pages.getPageSize(),pages.getPageSize());
+				count = dkDealDao.findTypeDKList(type,userId,status);
+			}
 		}
 		setUserInfo(list);
 		pages.setRecordTotal(count);
@@ -157,27 +189,48 @@ public class DKDealService {
 	}
 	
 	private void setUserInfo(List<DKDealInfo> list) {
+		Map<Integer,User> userMap = new HashMap<Integer,User>();
+		Map<Integer,List<UserPayInfo>> upInfoMap = new HashMap<Integer,List<UserPayInfo>>();
+		Map<Integer,UserInfo> maps = new HashMap<Integer,UserInfo>();
 		User u = null;
-		Optional<UserInfo> uInfo = null;
-		for (DKDealInfo dk : list) {
-			u = userDao.findById(dk.getUser_id()).get();
-			List<UserPayInfo> uPList =userPayInfoService.findUserPayInfoList(dk.getUser_id());
-			u.setUserInfo(getPayListByType(uPList,dk.getPayInfo()));
-			uInfo = userInfoDao.findById(dk.getUser_id());
-			if(uInfo.isPresent()) {
-				u.setUInfo(uInfo.get());
+		UserInfo uInfo = null;
+		List<User> userList = userDao.findAll();
+		List<UserPayInfo> upInfoList = userPayInfoDao.findAll();
+		List<UserInfo> userInfoList = userInfoDao.findAll();
+		for (User user : userList) {
+			userMap.put(user.getId(), user);
+		}
+		for (UserPayInfo userPayInfo : upInfoList) {
+			if(upInfoMap.containsKey(userPayInfo.getUserId())) {
+				upInfoMap.get(userPayInfo.getUserId()).add(userPayInfo);
+			}else {
+				List<UserPayInfo> l = new ArrayList<UserPayInfo>();
+				l.add(userPayInfo);
+				upInfoMap.put(userPayInfo.getUserId(), l);
 			}
-			u.setPwd("");
-			dk.setUser(u);
+		}
+		for (UserInfo userInfo : userInfoList) {
+			maps.put(userInfo.getUserId(), userInfo);
+		}
+		
+		for (DKDealInfo dk : list) {
+			if(userMap.containsKey(dk.getUser_id())) {
+				u = userMap.get(dk.getUser_id());
+				List<UserPayInfo> uPList =upInfoMap.get(dk.getUser_id());
+				u.setUserInfo(getPayListByType(uPList,dk.getPayInfo()));
+				uInfo = maps.get(dk.getUser_id());
+				u.setUInfo(uInfo);
+				u.setPwd("");
+				dk.setUser(u);
+			}
 			
-			if(null != dk.getPay_user_id()) {
-				u = userDao.findById(dk.getPay_user_id()).get();
-				List<UserPayInfo> uPList2 =userPayInfoService.findUserPayInfoList(dk.getPay_user_id());
+			
+			if(userMap.containsKey(dk.getPay_user_id())) {
+				u = userMap.get(dk.getPay_user_id());
+				List<UserPayInfo> uPList2 = upInfoMap.get(dk.getPay_user_id());
 				u.setUserPayInfo(getPayListByType(uPList2,dk.getPayInfo()));
-				uInfo = userInfoDao.findById(dk.getPay_user_id());
-				if(uInfo.isPresent()) {
-					u.setUInfo(uInfo.get());
-				}
+				uInfo = maps.get(dk.getPay_user_id());
+				u.setUInfo(uInfo);
 				u.setPwd("");
 				dk.setPayUser(u);
 			}
@@ -237,7 +290,7 @@ public class DKDealService {
 				dkDealInfo.setStatus(3);
 				dkDealInfo.setUser_id(dkInfo.getUser_id());
 				dkDealInfo.setType(dkInfo.getType());
-				
+				dkDealInfo.setPay_user_id(UserUtil.get().getId());
 				
 				DKDealInfo dkDealInfo2 = new DKDealInfo();
 				dkDealInfo2.setDealNumber(dealNumber);
@@ -329,23 +382,25 @@ public class DKDealService {
 		userBalanceDao.addDKBalance(dealInfo.getUser_id(), new BigDecimal(dealInfo.getDealNumber()));
 
 		List<UserBonusLog> bonusList=new ArrayList<>();
-		//卖家增加DK记录
+		//买家增加DK记录
 		UserBonusLog  userBonusLog=new UserBonusLog();
-		userBonusLog.setAmount(new BigDecimal(dealInfo.getDealNumber()));
+		userBonusLog.setAmount(new BigDecimal(dealInfo.getMoney()));
 		userBonusLog.setUserId(dealInfo.getUser_id());
 		userBonusLog.setBonusCoinType(0);
 		userBonusLog.setBonusType(12);
 		bonusList.add(userBonusLog);
 
-		//买家减少DK记录
+		//卖家减少DK记录
 		userBonusLog=new UserBonusLog();
-		userBonusLog.setAmount(new BigDecimal(dkInfo.getDealNumber()).multiply(new BigDecimal(-1)));
+		userBonusLog.setAmount(new BigDecimal(dealInfo.getDealNumber()).multiply(new BigDecimal(-1)));
 		userBonusLog.setUserId(dkInfo.getUser_id());
 		userBonusLog.setBonusCoinType(1);
 		userBonusLog.setBonusType(12);
 		bonusList.add(userBonusLog);
 
-	/*	userBonusLogDao.saveAll(bonusList);
+		userBonusLogDao.saveAll(bonusList);
+
+	/*
 		if(dealInfo.getDealNumber() < dkInfo.getDealNumber()) {
 			dkInfo.setId(null);
 			saveDKDeal(dkInfo,false);

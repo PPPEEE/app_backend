@@ -1,6 +1,7 @@
 package com.pe.exchange.config;
 
 import com.pe.exchange.dao.UserDao;
+import com.pe.exchange.service.ProfileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,10 +29,6 @@ import java.util.List;
 
 public class SwaggerConfig implements WebMvcConfigurer {
 
-    public static final String PROFILE_PROD="prod";
-    @Value("${spring.profiles.active}")
-    String env;
-
 
     @Autowired UserDao userDao;
 
@@ -44,7 +41,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
         List<Parameter> parameterBuilders =new ArrayList<>();
         parameterBuilders.add(ticketPar.build());
 
-        return new Docket(DocumentationType.SWAGGER_2).enable(!env.equals(PROFILE_PROD))
+        return new Docket(DocumentationType.SWAGGER_2).enable(ProfileService.isTest)
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.pe.exchange.controller"))

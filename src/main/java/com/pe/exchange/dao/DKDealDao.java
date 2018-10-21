@@ -18,17 +18,31 @@ public interface DKDealDao extends JpaRepository<DKDealInfo, Integer>{
 	@Query(value="select count(1) from dkdeal_info where `status` = :status and type = :type and user_id != :userId",nativeQuery = true)
 	Integer findTypeDKList(@Param("type")int type,@Param("userId")int userId,@Param("status") Integer status);
 	
-	@Query(value="select * from dkdeal_info where `status` = :status and type = :type and user_id != :userId  limit :page,:pageSize",nativeQuery = true)
+	@Query(value="select * from dkdeal_info where `status` = :status and type = :type and user_id != :userId ORDER BY id desc  limit :page,:pageSize",nativeQuery = true)
 	List<DKDealInfo> findTypeDKList(@Param("type")int type,@Param("userId")int userId,@Param("status") Integer status,@Param("page")Integer page,@Param("pageSize")Integer pageSize);
 	
-	@Query(value="select count(1) from dkdeal_info where user_id = :userId and status = :status",nativeQuery = true)
+	@Query(value="select count(1) from dkdeal_info where type = :type and user_id != :userId ORDER BY id desc",nativeQuery = true)
+	Integer findTypeDKList(@Param("type")int type,@Param("userId")int userId);
+	
+	@Query(value="select * from dkdeal_info where type = :type and user_id != :userId  ORDER BY id desc limit :page,:pageSize",nativeQuery = true)
+	List<DKDealInfo> findTypeDKList(@Param("type")int type,@Param("userId")int userId,@Param("page")Integer page,@Param("pageSize")Integer pageSize);
+	
+	
+	@Query(value="select count(1) from dkdeal_info where user_id = :userId and status = :status ORDER BY id desc",nativeQuery = true)
 	Integer findUserDKList(@Param("userId")Integer userId,@Param("status")Integer status);
 	
 	
-	@Query(value="select * from dkdeal_info where status = :status and user_id = :userId limit :page,:pageSize",nativeQuery = true)
+	@Query(value="select * from dkdeal_info where status = :status and user_id = :userId ORDER BY id desc limit :page,:pageSize",nativeQuery = true)
 	List<DKDealInfo> findUserDKList(@Param("userId")Integer userId,@Param("status") Integer status,@Param("page")Integer page,@Param("pageSize")Integer pageSize);
 	
-	@Query(value="select * from dkdeal_info where order_number = :orderNumber and user_id != :userId",nativeQuery = true)
+	@Query(value="select count(1) from dkdeal_info where user_id = :userId ORDER BY id desc",nativeQuery = true)
+	Integer findUserDKList(@Param("userId")Integer userId);
+	
+	
+	@Query(value="select * from dkdeal_info where user_id = :userId ORDER BY id desc limit :page,:pageSize ",nativeQuery = true)
+	List<DKDealInfo> findUserDKList(@Param("userId")Integer userId,@Param("page")Integer page,@Param("pageSize")Integer pageSize);
+	
+	@Query(value="select * from dkdeal_info where order_number = :orderNumber and user_id != :userId ",nativeQuery = true)
 	DKDealInfo findUserDKByNumber(@Param("orderNumber")String orderNumber ,@Param("userId") Integer userId);
 	
 	@Query(value="select * from dkdeal_info where order_number = :orderNumber and user_id = :userId",nativeQuery = true)
@@ -36,5 +50,14 @@ public interface DKDealDao extends JpaRepository<DKDealInfo, Integer>{
 	
 	@Query(value="SELECT SUM(deal_number) FROM dkdeal_info  where parent_order_number = :orderNumber ",nativeQuery = true)
 	Integer findOrderNumberSum(@Param("orderNumber") String orderNumber);
+	
+	
+	
+	@Query(value="select count(1) from dkdeal_info where user_id = :userId and type = :type ORDER BY id desc",nativeQuery = true)
+	Integer findUserDKList(@Param("userId")Integer userId,@Param("type") String type);
+	
+	
+	@Query(value="select * from dkdeal_info where user_id = :userId and type = :type ORDER BY id desc limit :page,:pageSize",nativeQuery = true)
+	List<DKDealInfo> findUserDKList(@Param("userId")Integer userId,@Param("type") String type,@Param("page")Integer page,@Param("pageSize")Integer pageSize);
 	
 }

@@ -10,6 +10,7 @@ public enum ResultEnum {
     CODE_ERROR(302,"验证码失效"),
     USER_FAIL(303,"用户失效！"),
     USER_NOT_EXISTS(304,"目标用户不存在"),
+    PAY_PWD_ERROR(305,"支付密码错误"),
     NOT_FOUND(404,"接口不存在"),//接口不存在
     INTERNAL_SERVER_ERROR(500,"内部错误"),
 
